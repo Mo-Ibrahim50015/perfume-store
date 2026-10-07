@@ -1,0 +1,447 @@
+openapi: 3.0.3
+info:
+  title: متجر العطور - API Specification
+  description: واجهات برمجة التطبيقات لمنصة متجر العطور الإلكتروني وفقاً للـ PRD (v1.0)
+  version: 1.0.0
+  contact:
+    name: فريق التطوير
+    email: dev@perfumestore.eg
+servers:
+  - url: http://localhost:5000/api/v1
+    description: بيئة التطوير المحلية (Local Development)
+
+tags:
+  - name: Health
+    description: فحص حالة الخادم والخدمات المتصلة
+  - name: Auth
+    description: تسجيل المستخدمين، الدخول، وتجديد الرموز
+  - name: Categories
+    description: تصنيفات العطور
+  - name: Products
+    description: تصفح، بحث، وفلترة المنتجات، وإدارتها للمشرفين
+  - name: Cart
+    description: إدارة سلة التسوق للمستخدمين المسجلين
+  - name: Orders
+    description: إنشاء ومتابعة الطلبات وتحديث حالتها
+  - name: Reviews
+    description: تقييمات ومراجعات المنتجات
+
+paths:
+  /health:
+    get:
+      tags: [Health]
+      summary: فحص صحة الخادم والاتصال بقاعدة البيانات و Redis
+      responses:
+        '200':
+          description: الخدمة تعمل بشكل طبيعي
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: { type: string, example: "ok" }
+                  timestamp: { type: string, format: date-time }
+                  services:
+                    type: object
+                    properties:
+                      database: { type: string, example: "connected" }
+                      redis: { type: string, example: "connected" }
+
+  /auth/register:
+    post:
+      tags: [Auth]
+      summary: إنشاء حساب عميل جديد
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password, name]
+              properties:
+                name: { type: string, example: "أحمد محمود" }
+                email: { type: string, format: email, example: "ahmed@example.com" }
+                password: { type: string, minLength: 8, example: "Secret@1234" }
+                phone: { type: string, example: "+201012345678" }
+      responses:
+        '201':
+          description: تم إنشاء الحساب بنجاح
+        '400':
+          description: بيانات غير صالحة أو البريد مستخدم مسبقاً
+
+  /auth/login:
+    post:
+      tags: [Auth]
+      summary: تسجيل الدخول والحصول على JWT Tokens
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email, example: "customer@example.com" }
+                password: { type: string, example: "Customer@12345" }
+      responses:
+        '200':
+          description: تم تسجيل الدخول بنجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token: { type: string }
+                  refresh_token: { type: string }
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          description: البريد الإلكتروني أو كلمة المرور غير صحيحة
+
+  /auth/refresh:
+    post:
+      tags: [Auth]
+      summary: تجديد Access Token بواسطة Refresh Token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token: { type: string }
+      responses:
+        '200':
+          description: تم تجديد الرمز بنجاح
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  access_token: { type: string }
+
+  /categories:
+    get:
+      tags: [Categories]
+      summary: جلب قائمة جميع تصنيفات العطور
+      responses:
+        '200':
+          description: قائمة التصنيفات
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  /products:
+    get:
+      tags: [Products]
+      summary: تصفح المنتجات مع البحث والفلترة والـ Pagination
+      parameters:
+        - in: query
+          name: page
+          schema: { type: integer, default: 1 }
+        - in: query
+          name: limit
+          schema: { type: integer, default: 20 }
+        - in: query
+          name: search
+          schema: { type: string }
+          description: البحث في اسم العطر أو وصفه
+        - in: query
+          name: category
+          schema: { type: string }
+          description: slug التصنيف
+        - in: query
+          name: minPrice
+          schema: { type: number }
+        - in: query
+          name: maxPrice
+          schema: { type: number }
+        - in: query
+          name: sort
+          schema: { type: string, enum: [newest, price_asc, price_desc, rating], default: newest }
+      responses:
+        '200':
+          description: قائمة المنتجات المسترجعة
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  total: { type: integer }
+                  page: { type: integer }
+                  limit: { type: integer }
+                  total_pages: { type: integer }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Product'
+    post:
+      tags: [Products]
+      summary: إضافة عطر جديد (للمشرفين فقط)
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductCreate'
+      responses:
+        '201':
+          description: تم إنشاء المنتج بنجاح
+        '403':
+          description: غير مصرح (Admin فقط)
+
+  /products/{id}:
+    get:
+      tags: [Products]
+      summary: جلب تفاصيل عطر محدد
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: تفاصيل العطر
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProductDetail'
+        '404':
+          description: المنتج غير موجود
+
+  /cart:
+    get:
+      tags: [Cart]
+      summary: جلب سلة التسوق للمستخدم الحالي
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: محتويات السلة والإجماليات
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CartResponse'
+    post:
+      tags: [Cart]
+      summary: إضافة منتج إلى السلة أو زيادة كميته
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [product_id, quantity]
+              properties:
+                product_id: { type: integer }
+                quantity: { type: integer, minimum: 1, default: 1 }
+      responses:
+        '200':
+          description: تم تحديث السلة بنجاح
+
+  /cart/{item_id}:
+    put:
+      tags: [Cart]
+      summary: تعديل كمية عنصر في السلة
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [quantity]
+              properties:
+                quantity: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: تم تعديل الكمية
+    delete:
+      tags: [Cart]
+      summary: حذف عنصر من السلة
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: item_id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: تم حذف العنصر
+
+  /orders:
+    get:
+      tags: [Orders]
+      summary: استعراض جميع طلبات المستخدم المسجل
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: قائمة الطلبات
+    post:
+      tags: [Orders]
+      summary: إنشاء طلب شراء جديد وتجهيز رابط الدفع
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateOrderRequest'
+      responses:
+        '201':
+          description: تم إنشاء الطلب بنجاح
+
+  /orders/{id}:
+    get:
+      tags: [Orders]
+      summary: جلب تفاصيل طلب محدد
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      responses:
+        '200':
+          description: تفاصيل الطلب الكاملة
+
+  /orders/{id}/status:
+    put:
+      tags: [Orders]
+      summary: تحديث حالة الطلب (للمشرفين فقط)
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [status]
+              properties:
+                status:
+                  type: string
+                  enum: [pending, processing, shipped, delivered, cancelled]
+      responses:
+        '200':
+          description: تم تحديث الحالة
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        role: { type: string, enum: [customer, admin] }
+        default_address: { type: string }
+
+    Category:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string }
+        image_url: { type: string }
+
+    Product:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        slug: { type: string }
+        brand: { type: string }
+        price: { type: number }
+        compare_at_price: { type: number, nullable: true }
+        stock: { type: integer }
+        images: { type: array, items: { type: string } }
+        rating: { type: number }
+        reviews_count: { type: integer }
+        is_featured: { type: boolean }
+
+    ProductDetail:
+      allOf:
+        - $ref: '#/components/schemas/Product'
+        - type: object
+          properties:
+            description: { type: string }
+            category: { $ref: '#/components/schemas/Category' }
+
+    ProductCreate:
+      type: object
+      required: [name, slug, price, stock, category_id]
+      properties:
+        name: { type: string }
+        slug: { type: string }
+        description: { type: string }
+        brand: { type: string }
+        price: { type: number }
+        compare_at_price: { type: number }
+        category_id: { type: integer }
+        stock: { type: integer }
+        sku: { type: string }
+        images: { type: array, items: { type: string } }
+        is_featured: { type: boolean }
+
+    CartResponse:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: integer }
+              product_id: { type: integer }
+              product_name: { type: string }
+              price: { type: number }
+              quantity: { type: integer }
+              subtotal: { type: number }
+              image: { type: string }
+        subtotal: { type: number }
+        tax: { type: number }
+        shipping_cost: { type: number }
+        total: { type: number }
+
+    CreateOrderRequest:
+      type: object
+      required: [recipient_name, recipient_phone, shipping_address, payment_method]
+      properties:
+        recipient_name: { type: string }
+        recipient_phone: { type: string }
+        shipping_address: { type: string }
+        shipping_city: { type: string, default: "Cairo" }
+        payment_method: { type: string, enum: [card, fawry, instapay, cod] }
+        notes: { type: string }
