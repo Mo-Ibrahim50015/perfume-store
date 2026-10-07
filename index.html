@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Security & Content Security Policy (CSP) Directives -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com https://api.qrserver.com; connect-src 'self'; object-src 'none'; base-uri 'self';">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.tailwindcss.com 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com https://api.qrserver.com; connect-src 'self'; object-src 'none'; base-uri 'self';">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -243,7 +243,7 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between gap-3 sm:gap-6">
       
       <!-- Brand Logo -->
-      <div class="flex items-center gap-3 cursor-pointer select-none" onclick="resetFilters()">
+      <div class="flex items-center gap-3 cursor-pointer select-none" data-action="reset-filters">
         <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-amber-600 to-amber-800 flex items-center justify-center text-white shadow-lg shadow-amber-900/20 text-2xl font-black">
           🌸
         </div>
@@ -260,11 +260,11 @@
             type="text" 
             id="searchInput" 
             placeholder="ابحث عن عطر، ماركة، أو مكونات (مثال: عود، ياسمين، فانيلا، مسك)..." 
-            oninput="handleSearch(this.value)"
+            class="search-input-field"
             class="w-full bg-slate-100/90 border border-slate-200 rounded-full py-2.5 pr-11 pl-8 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-amber-600 focus:bg-white transition shadow-inner"
           />
           <span class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 text-base">🔍</span>
-          <button id="clearSearchBtn" onclick="clearSearch()" class="hidden absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold bg-slate-200 rounded-full w-5 h-5 flex items-center justify-center">✕</button>
+          <button id="clearSearchBtn" data-action="clear-search" class="hidden absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold bg-slate-200 rounded-full w-5 h-5 flex items-center justify-center">✕</button>
         </div>
       </div>
 
@@ -273,7 +273,7 @@
 
         <!-- Track Order Quick Button -->
         <button 
-          onclick="openTrackingModal()"
+          data-action="open-tracking"
           class="flex items-center gap-1.5 px-3 py-2 rounded-2xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-100 transition"
           title="تتبع شحنتك"
         >
@@ -283,7 +283,7 @@
 
         <!-- Wishlist Button -->
         <button 
-          onclick="toggleWishlist(true)"
+          data-action="open-wishlist"
           class="relative p-2.5 rounded-2xl border border-slate-200 text-slate-700 hover:bg-amber-50 hover:text-amber-700 hover:border-amber-200 transition"
           title="المفضلة"
         >
@@ -295,7 +295,7 @@
 
         <!-- Cart Button -->
         <button 
-          onclick="toggleCart(true)"
+          data-action="open-cart"
           class="relative bg-amber-600 hover:bg-amber-700 active:scale-95 text-white font-bold px-3.5 sm:px-4 py-2.5 rounded-2xl flex items-center gap-2 shadow-md shadow-amber-600/20 transition"
         >
           <span class="text-base sm:text-lg">🛍️</span>
@@ -307,7 +307,7 @@
 
         <!-- User / Auth Profile Button -->
         <button 
-          onclick="openAuthModal()"
+          data-action="open-auth"
           class="p-2 sm:px-3 sm:py-2 rounded-2xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold flex items-center gap-1.5 transition"
           title="حسابي"
         >
@@ -318,7 +318,7 @@
         <!-- Admin View Switcher -->
         <button 
           id="roleSwitchBtn" 
-          onclick="toggleRole()"
+          data-action="toggle-role"
           class="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-amber-300 bg-amber-50 text-[11px] font-bold text-amber-900 hover:bg-amber-100 transition"
         >
           <span id="roleBadge">🛡️ المشرف</span>
@@ -334,7 +334,7 @@
         type="text" 
         id="mobileSearchInput" 
         placeholder="ابحث عن عطر، ماركة، أو مكونات..." 
-        oninput="handleSearch(this.value)"
+        class="search-input-field"
         class="w-full bg-slate-100 border border-slate-200 rounded-full py-2 pr-10 pl-3 text-xs focus:outline-none focus:ring-2 focus:ring-amber-600"
       />
     </div>
@@ -359,7 +359,7 @@
           <a href="#catalogSection" class="bg-amber-600 hover:bg-amber-500 text-white font-bold px-6 py-3 rounded-2xl shadow-lg shadow-amber-600/30 transition transform hover:-translate-y-0.5 inline-block text-xs sm:text-sm">
             تصفح الكتالوج كاملاً ↓
           </a>
-          <button onclick="applyCouponCode('PERFUME10')" class="bg-white/10 hover:bg-white/20 text-amber-200 text-xs font-bold px-4 py-3 rounded-2xl border border-white/20 transition">
+          <button data-action="apply-coupon" data-val="PERFUME10" class="bg-white/10 hover:bg-white/20 text-amber-200 text-xs font-bold px-4 py-3 rounded-2xl border border-white/20 transition">
             نسخ كوبون الخصم: PERFUME10
           </button>
         </div>
@@ -389,13 +389,13 @@
           <p class="text-xs text-slate-500 mt-1">إدارة المنتجات، تحديث المخزون، والتحكم في حالات شحن الطلبات (P0-F008 & P0-F009)</p>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="openAddOrderModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
+          <button data-action="open-add-order" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
             <span>+</span> إضافة طلب يدوياً
           </button>
-          <button onclick="openAddProductModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
+          <button data-action="open-add-product" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
             <span>+</span> إضافة عطر جديد
           </button>
-          <button onclick="refreshAdminData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold">
+          <button data-action="refresh-admin" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold">
             🔄 تحديث
           </button>
         </div>
@@ -496,7 +496,7 @@
       </div>
       <div class="flex items-center gap-2">
         <label for="sortSelect" class="text-slate-500 font-medium">ترتيب حسب:</label>
-        <select id="sortSelect" onchange="handleSort(this.value)" class="bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-600">
+        <select id="sortSelect"  class="bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-xs text-slate-700 focus:outline-none focus:ring-2 focus:ring-amber-600">
           <option value="featured">الأكثر تميزاً</option>
           <option value="price_asc">السعر: من الأقل للأعلى</option>
           <option value="price_desc">السعر: من الأعلى للأقل</option>
@@ -515,7 +515,7 @@
       <div class="text-6xl mb-4">🔍</div>
       <h3 class="text-lg font-bold text-slate-800 mb-1">لم نتمكن من العثور على أي عطور تطابق بحثك</h3>
       <p class="text-sm text-slate-500 mb-4">جرب البحث بكلمات أخرى مثل "عود"، "مسك"، "ياسمين" أو تصفح باقي التصنيفات.</p>
-      <button onclick="resetFilters()" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition">
+      <button data-action="reset-filters" class="bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition">
         إعادة تعيين الفلاتر
       </button>
     </div>
@@ -527,10 +527,10 @@
   <!-- ======================================================== -->
   <div id="productDetailModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" onclick="closeProductDetailModal()"></div>
+      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" data-action="close-product-detail"></div>
       
       <div class="inline-block w-full max-w-2xl p-6 my-8 text-right bg-white rounded-3xl shadow-2xl relative z-10 transform text-xs">
-        <button onclick="closeProductDetailModal()" class="absolute top-5 left-5 text-slate-400 hover:text-slate-700 text-xl font-bold">✕</button>
+        <button data-action="close-product-detail" class="absolute top-5 left-5 text-slate-400 hover:text-slate-700 text-xl font-bold">✕</button>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
           <!-- Image -->
@@ -587,10 +587,10 @@
                 <span id="modalProductPrice" class="text-lg font-black text-amber-700"></span>
               </div>
               <div class="flex items-center gap-2">
-                <button id="modalFavBtn" onclick="" class="p-3 rounded-xl border border-slate-200 text-base hover:bg-red-50">
+                <button id="modalFavBtn"  class="p-3 rounded-xl border border-slate-200 text-base hover:bg-red-50">
                   🤍
                 </button>
-                <button id="modalAddToCartBtn" onclick="" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-5 py-3 rounded-xl shadow-md text-xs transition">
+                <button id="modalAddToCartBtn"  class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-5 py-3 rounded-xl shadow-md text-xs transition">
                   إضافة للسلة 🛍️
                 </button>
               </div>
@@ -608,7 +608,7 @@
           </div>
 
           <!-- Add Review Form -->
-          <form onsubmit="handleReviewSubmit(event)" class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
+          <form id="reviewForm" class="bg-slate-50 p-3 rounded-2xl border border-slate-200 space-y-2">
             <span class="font-bold text-slate-700 block text-[11px]">اكتب تقييمك لهذا العطر:</span>
             <div class="flex items-center gap-3">
               <input type="text" id="reviewAuthor" required placeholder="اسمك" class="bg-white border border-slate-200 rounded-lg px-2.5 py-1 text-xs w-32" />
@@ -635,7 +635,7 @@
   <!-- 2. Wishlist Drawer (المفضلة)                             -->
   <!-- ======================================================== -->
   <div id="wishlistDrawer" class="fixed inset-0 z-50 overflow-hidden hidden" role="dialog" aria-modal="true">
-    <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="toggleWishlist(false)"></div>
+    <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" data-action="close-wishlist"></div>
     <div class="fixed inset-y-0 left-0 max-w-full flex">
       <div class="w-screen max-w-md bg-white shadow-2xl flex flex-col">
         
@@ -645,7 +645,7 @@
             <h3 class="font-bold text-slate-900 text-sm">قائمة العطور المفضلة</h3>
             <span id="wishlistHeaderCount" class="text-xs bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full">0</span>
           </div>
-          <button onclick="toggleWishlist(false)" class="text-slate-400 hover:text-slate-600 p-1 text-base">✕</button>
+          <button data-action="close-wishlist" class="text-slate-400 hover:text-slate-600 p-1 text-base">✕</button>
         </div>
 
         <div id="wishlistItemsContainer" class="flex-1 overflow-y-auto p-4 divide-y divide-slate-100 space-y-3">
@@ -660,7 +660,7 @@
   <!-- 3. Shopping Cart Drawer (مع نظام الكوبونات)               -->
   <!-- ======================================================== -->
   <div id="cartDrawer" class="fixed inset-0 z-50 overflow-hidden hidden" role="dialog" aria-modal="true">
-    <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" onclick="toggleCart(false)"></div>
+    <div class="absolute inset-0 bg-slate-950/60 backdrop-blur-sm" data-action="close-cart"></div>
     <div class="fixed inset-y-0 left-0 max-w-full flex">
       <div class="w-screen max-w-md bg-white shadow-2xl flex flex-col">
         
@@ -671,7 +671,7 @@
             <h3 class="font-bold text-slate-900 text-sm">سلة المشتريات</h3>
             <span id="cartHeaderCount" class="text-xs bg-amber-100 text-amber-800 font-bold px-2 py-0.5 rounded-full">0 عناصر</span>
           </div>
-          <button onclick="toggleCart(false)" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg text-lg">✕</button>
+          <button data-action="close-cart" class="text-slate-400 hover:text-slate-600 p-1 rounded-lg text-lg">✕</button>
         </div>
 
         <!-- Cart Items List -->
@@ -687,7 +687,7 @@
             placeholder="كوبون الخصم (مثال: PERFUME10)" 
             class="flex-1 bg-white border border-slate-200 rounded-xl px-3 py-1.5 text-xs uppercase font-bold focus:outline-none focus:ring-1 focus:ring-amber-600"
           />
-          <button onclick="applyEnteredCoupon()" class="bg-amber-800 hover:bg-amber-900 text-amber-100 px-3 py-1.5 rounded-xl font-bold text-xs transition">
+          <button data-action="apply-entered-coupon" class="bg-amber-800 hover:bg-amber-900 text-amber-100 px-3 py-1.5 rounded-xl font-bold text-xs transition">
             تطبيق
           </button>
         </div>
@@ -715,7 +715,7 @@
 
           <button 
             id="checkoutBtn" 
-            onclick="openCheckoutModal()"
+            data-action="open-checkout"
             class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3.5 rounded-2xl shadow-lg shadow-amber-600/30 flex items-center justify-center gap-2 text-xs sm:text-sm transition active:scale-98"
           >
             <span>متابعة إتمام الطلب (Checkout)</span>
@@ -732,7 +732,7 @@
   <!-- ======================================================== -->
   <div id="checkoutModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" onclick="closeCheckoutModal()"></div>
+      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" data-action="close-checkout"></div>
       
       <div class="inline-block w-full max-w-lg p-6 my-8 text-right bg-white rounded-3xl shadow-2xl transform transition-all relative z-10 text-xs">
         
@@ -744,10 +744,10 @@
               <p class="text-xs text-slate-500">توصيل آمن لباب البيت في 24-48 ساعة</p>
             </div>
           </div>
-          <button onclick="closeCheckoutModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+          <button data-action="close-checkout" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
         </div>
 
-        <form id="checkoutForm" onsubmit="handleCheckoutSubmit(event)" class="space-y-4">
+        <form id="checkoutForm" id="checkoutForm" class="space-y-4">
           
           <div>
             <label class="block font-semibold text-slate-700 mb-1">الاسم الكامل *</label>
@@ -842,10 +842,10 @@
   <!-- A: Instapay Screen (إنستاباي - الشبكة القومية للمدفوعات اللحظية IPN) -->
   <div id="instapayModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-      <div class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm" onclick="closePaymentModals()"></div>
+      <div class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm" data-action="close-payment-modals"></div>
       
       <div class="inline-block w-full max-w-lg p-6 my-8 text-right bg-white rounded-3xl shadow-2xl relative z-10 text-xs">
-        <button onclick="closePaymentModals()" class="absolute top-5 left-5 text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        <button data-action="close-payment-modals" class="absolute top-5 left-5 text-slate-400 hover:text-slate-600 text-lg">✕</button>
 
         <!-- Header -->
         <div class="flex items-center gap-3 pb-3 border-b border-purple-100 mb-4">
@@ -870,7 +870,7 @@
             <span class="text-slate-500 block text-[11px]">المبلغ المطلوب تحويله بالظبط:</span>
             <span id="instapayAmount" class="font-black text-purple-950 text-xl tracking-tight"></span>
           </div>
-          <button type="button" onclick="copyInstapayAmount()" class="bg-white hover:bg-purple-100 text-purple-700 font-bold px-3 py-1.5 rounded-xl border border-purple-200 shadow-sm text-xs flex items-center gap-1 transition">
+          <button type="button" data-action="copy-instapay-amount" class="bg-white hover:bg-purple-100 text-purple-700 font-bold px-3 py-1.5 rounded-xl border border-purple-200 shadow-sm text-xs flex items-center gap-1 transition">
             <span>📋</span> نسخ المبلغ
           </button>
         </div>
@@ -899,7 +899,7 @@
               <span class="text-slate-400 block text-[10px]">عنوان الدفع اللحظي (IPA):</span>
               <span class="font-mono font-bold text-purple-900 text-xs select-all">perfumepalace@instapay</span>
             </div>
-            <button type="button" onclick="copyToClipboard('perfumepalace@instapay', 'عنوان الدفع IPA')" class="bg-slate-100 hover:bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg text-[10px] font-bold">📋 نسخ</button>
+            <button type="button" data-action="copy-text" data-val="perfumepalace@instapay" data-msg="عنوان الدفع IPA" class="bg-slate-100 hover:bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg text-[10px] font-bold">📋 نسخ</button>
           </div>
 
           <!-- Phone Number -->
@@ -908,7 +908,7 @@
               <span class="text-slate-400 block text-[10px]">رقم هاتف إنستاباي:</span>
               <span class="font-mono font-bold text-slate-800 text-xs select-all">01099887766</span>
             </div>
-            <button type="button" onclick="copyToClipboard('01099887766', 'رقم الهاتف')" class="bg-slate-100 hover:bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg text-[10px] font-bold">📋 نسخ</button>
+            <button type="button" data-action="copy-text" data-val="01099887766" data-msg="رقم الهاتف" class="bg-slate-100 hover:bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg text-[10px] font-bold">📋 نسخ</button>
           </div>
 
           <!-- Bank Account -->
@@ -917,7 +917,7 @@
               <span class="text-slate-400 block text-[10px]">رقم الحساب البنكي (البنك الأهلي المصري):</span>
               <span class="font-mono font-bold text-slate-800 text-xs select-all">1000 4829 3910 2001</span>
             </div>
-            <button type="button" onclick="copyToClipboard('1000482939102001', 'رقم الحساب')" class="bg-slate-100 hover:bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg text-[10px] font-bold">📋 نسخ</button>
+            <button type="button" data-action="copy-text" data-val="1000482939102001" data-msg="رقم الحساب" class="bg-slate-100 hover:bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg text-[10px] font-bold">📋 نسخ</button>
           </div>
 
           <!-- IBAN -->
@@ -926,7 +926,7 @@
               <span class="text-slate-400 block text-[10px]">الآيبان الدولي (IBAN):</span>
               <span class="font-mono font-bold text-slate-700 text-[10px] select-all">EG5200020001000482939102001</span>
             </div>
-            <button type="button" onclick="copyToClipboard('EG5200020001000482939102001', 'الآيبان IBAN')" class="bg-slate-100 hover:bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg text-[10px] font-bold">📋 نسخ</button>
+            <button type="button" data-action="copy-text" data-val="EG5200020001000482939102001" data-msg="الآيبان IBAN" class="bg-slate-100 hover:bg-purple-100 text-purple-700 px-2.5 py-1 rounded-lg text-[10px] font-bold">📋 نسخ</button>
           </div>
 
           <!-- Account Name -->
@@ -970,7 +970,7 @@
               />
               <button 
                 type="button"
-                onclick="verifyInstapayTransferManually()" 
+                data-action="verify-instapay-manual" 
                 class="bg-purple-600 hover:bg-purple-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs transition"
               >
                 تحقق واستعلام ⚡
@@ -981,7 +981,7 @@
           <!-- Customer Transfer Simulation Trigger (for live test) -->
           <button 
             type="button"
-            onclick="simulateIncomingBankTransfer()" 
+            data-action="simulate-instapay" 
             class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2 transition active:scale-98"
           >
             <span>⚡ محاكاة تحويل العميل الآن (اختبار سماع الفلوس فورياً)</span>
@@ -1017,7 +1017,7 @@
               </div>
             </div>
           </div>
-          <button type="button" onclick="finishPaymentAndGoToTracking()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-2xl text-xs transition shadow-md">
+          <button type="button" data-action="finish-payment-track" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-2xl text-xs transition shadow-md">
             الانتقال لتتبع مسار الشحنة الآن 📦
           </button>
         </div>
@@ -1029,10 +1029,10 @@
   <!-- B: Fawry Screen (فوري باي - الرقم المرجعي والباركود الحقيقي) -->
   <div id="fawryModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-      <div class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm" onclick="closePaymentModals()"></div>
+      <div class="fixed inset-0 bg-slate-950/75 backdrop-blur-sm" data-action="close-payment-modals"></div>
       
       <div class="inline-block w-full max-w-lg p-6 my-8 text-right bg-white rounded-3xl shadow-2xl relative z-10 text-xs">
-        <button onclick="closePaymentModals()" class="absolute top-5 left-5 text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        <button data-action="close-payment-modals" class="absolute top-5 left-5 text-slate-400 hover:text-slate-600 text-lg">✕</button>
 
         <!-- Header -->
         <div class="flex items-center gap-3 pb-3 border-b border-amber-100 mb-4">
@@ -1055,7 +1055,7 @@
           <span class="text-slate-500 block text-[11px]">الرقم المرجعي الموحد لسداد الفاتورة:</span>
           <div class="flex items-center justify-center gap-3">
             <span id="fawryRefCode" class="text-3xl font-black font-mono text-amber-950 tracking-widest select-all"></span>
-            <button type="button" onclick="copyFawryRefCode()" class="bg-white hover:bg-amber-100 text-amber-900 font-bold px-3 py-1.5 rounded-xl border border-amber-300 text-xs shadow-sm">
+            <button type="button" data-action="copy-fawry-code" class="bg-white hover:bg-amber-100 text-amber-900 font-bold px-3 py-1.5 rounded-xl border border-amber-300 text-xs shadow-sm">
               📋 نسخ
             </button>
           </div>
@@ -1091,7 +1091,7 @@
 
           <button 
             type="button"
-            onclick="simulateIncomingFawryPayment()" 
+            data-action="simulate-fawry" 
             class="w-full bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-bold py-3.5 rounded-2xl text-xs shadow-md shadow-amber-600/20 flex items-center justify-center gap-2 transition active:scale-98"
           >
             <span>🏪 محاكاة سداد العميل في ماكينة فوري الآن (اختبار فوري)</span>
@@ -1127,7 +1127,7 @@
               </div>
             </div>
           </div>
-          <button type="button" onclick="finishPaymentAndGoToTracking()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-2xl text-xs transition shadow-md">
+          <button type="button" data-action="finish-payment-track" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-2xl text-xs transition shadow-md">
             الانتقال لتتبع مسار الشحنة الآن 📦
           </button>
         </div>
@@ -1166,7 +1166,7 @@
           ℹ️ سيتم إرسال رمز تحقق مؤقت (OTP) برسالة SMS لتأكيد المعاملة.
         </div>
 
-        <button onclick="confirmOrderSuccess('card')" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl text-xs shadow-md">
+        <button data-action="confirm-success" data-val="card" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-2xl text-xs shadow-md">
           تأكيد الخصم والدفع الآمن ✓
         </button>
       </div>
@@ -1207,10 +1207,10 @@
         </div>
 
         <div class="flex gap-2">
-          <button onclick="trackCurrentPlacedOrder()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-2xl transition">
+          <button data-action="track-current-order" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-2xl transition">
             📦 تتبع الشحنة الآن
           </button>
-          <button onclick="closeSuccessModal()" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-2xl transition">
+          <button data-action="close-success" class="flex-1 bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-2xl transition">
             العودة للمتجر
           </button>
         </div>
@@ -1224,14 +1224,14 @@
   <!-- ======================================================== -->
   <div id="trackingModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" onclick="closeTrackingModal()"></div>
+      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" data-action="close-tracking"></div>
       
       <div class="inline-block w-full max-w-lg p-6 my-8 text-right bg-white rounded-3xl shadow-2xl relative z-10 text-xs">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
           <h3 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
             <span>📦</span> تتبع مسار شحنتك المباشر
           </h3>
-          <button onclick="closeTrackingModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+          <button data-action="close-tracking" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
         </div>
 
         <!-- Tracking Search Input -->
@@ -1242,7 +1242,7 @@
             placeholder="أدخل رقم الطلب (مثال: ORD-102948)" 
             class="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-mono font-bold focus:ring-2 focus:ring-amber-600"
           />
-          <button onclick="searchOrderTracking()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-xl text-xs">
+          <button data-action="search-order-tracking" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-xl text-xs">
             بحث
           </button>
         </div>
@@ -1319,10 +1319,10 @@
   <!-- ======================================================== -->
   <div id="authModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" onclick="closeAuthModal()"></div>
+      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" data-action="close-auth"></div>
       
       <div class="inline-block w-full max-w-sm p-6 my-8 text-right bg-white rounded-3xl shadow-2xl relative z-10 text-xs">
-        <button onclick="closeAuthModal()" class="absolute top-5 left-5 text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        <button data-action="close-auth" class="absolute top-5 left-5 text-slate-400 hover:text-slate-600 text-lg">✕</button>
 
         <div class="text-center mb-5">
           <div class="w-12 h-12 bg-amber-100 text-amber-700 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-2">👤</div>
@@ -1330,7 +1330,7 @@
           <p class="text-[11px] text-slate-500">للوصول لطلباتك السابقة وعناوينك المفضلة</p>
         </div>
 
-        <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-3">
+        <form id="authForm" id="authForm" class="space-y-3">
           <div>
             <label class="block font-semibold text-slate-700 mb-1">البريد الإلكتروني</label>
             <input type="email" id="authEmail" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2.5 text-xs focus:ring-2 focus:ring-amber-600" value="customer@example.com" />
@@ -1346,8 +1346,8 @@
 
           <!-- Quick Test Prefill -->
           <div class="pt-3 border-t border-slate-100 flex justify-between text-[11px]">
-            <button type="button" onclick="prefillAccount('customer')" class="text-amber-800 underline font-semibold">حساب عميل (رانيا)</button>
-            <button type="button" onclick="prefillAccount('admin')" class="text-slate-600 underline font-semibold">حساب المشرف (Admin)</button>
+            <button type="button" data-action="prefill-account" data-val="customer" class="text-amber-800 underline font-semibold">حساب عميل (رانيا)</button>
+            <button type="button" data-action="prefill-account" data-val="admin" class="text-slate-600 underline font-semibold">حساب المشرف (Admin)</button>
           </div>
         </form>
 
@@ -1360,17 +1360,17 @@
   <!-- ======================================================== -->
   <div id="addProductModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" onclick="closeAddProductModal()"></div>
+      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" data-action="close-add-product"></div>
       
       <div class="inline-block w-full max-w-lg p-6 my-8 text-right bg-white rounded-3xl shadow-2xl relative z-10 text-xs">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
           <h3 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
             <span>➕</span> إضافة عطر جديد للكتالوج
           </h3>
-          <button onclick="closeAddProductModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+          <button data-action="close-add-product" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
         </div>
 
-        <form onsubmit="handleCreateProduct(event)" class="space-y-3">
+        <form id="addProductForm" class="space-y-3">
           <div>
             <label class="block font-semibold text-slate-700 mb-1">اسم العطر *</label>
             <input type="text" id="newProdName" required placeholder="مثال: عطر عنبر الحرمين الملكي - 100 مل" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs" />
@@ -1449,17 +1449,17 @@
   <!-- ======================================================== -->
   <div id="editProductModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" onclick="closeEditProductModal()"></div>
+      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" data-action="close-edit-product"></div>
       
       <div class="inline-block w-full max-w-lg p-6 my-8 text-right bg-white rounded-3xl shadow-2xl relative z-10 text-xs">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
           <h3 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
             <span>✏️</span> تعديل بيانات العطر والصورة والمكونات
           </h3>
-          <button onclick="closeEditProductModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+          <button data-action="close-edit-product" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
         </div>
 
-        <form onsubmit="handleUpdateProduct(event)" class="space-y-3">
+        <form id="editProductForm" class="space-y-3">
           <input type="hidden" id="editProdId" />
 
           <div>
@@ -1502,7 +1502,7 @@
           <div>
             <label class="block font-semibold text-slate-700 mb-1">رابط صورة العطر (URL) *</label>
             <div class="flex gap-2">
-              <input type="url" id="editProdImage" required oninput="document.getElementById('editProdImgPreview').src = this.value" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-mono" />
+              <input type="url" id="editProdImage" required  class="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-mono" />
               <img id="editProdImgPreview" src="" class="w-10 h-10 object-cover rounded-xl border border-slate-200 bg-slate-100" />
             </div>
           </div>
@@ -1543,17 +1543,17 @@
   <!-- ======================================================== -->
   <div id="addOrderModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
     <div class="min-h-screen px-4 text-center flex items-center justify-center">
-      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" onclick="closeAddOrderModal()"></div>
+      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" data-action="close-add-order"></div>
       
       <div class="inline-block w-full max-w-lg p-6 my-8 text-right bg-white rounded-3xl shadow-2xl relative z-10 text-xs">
         <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
           <h3 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
             <span>📦</span> إضافة طلب جديد يدوياً إلى النظام
           </h3>
-          <button onclick="closeAddOrderModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+          <button data-action="close-add-order" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
         </div>
 
-        <form onsubmit="handleCreateOrderManual(event)" class="space-y-3">
+        <form id="addOrderForm" class="space-y-3">
           <div>
             <label class="block font-semibold text-slate-700 mb-1">اسم العميل *</label>
             <input type="text" id="manualCustName" required placeholder="مثال: أحمد عبد الله" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs" />
@@ -1585,13 +1585,13 @@
           <div class="grid grid-cols-3 gap-3">
             <div class="col-span-2">
               <label class="block font-semibold text-slate-700 mb-1">اختر العطر المطلوب *</label>
-              <select id="manualOrderProduct" onchange="calculateManualOrderTotal()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs">
+              <select id="manualOrderProduct"  class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs">
                 <!-- Filled dynamically by JS -->
               </select>
             </div>
             <div>
               <label class="block font-semibold text-slate-700 mb-1">الكمية *</label>
-              <input type="number" id="manualOrderQty" min="1" value="1" onchange="calculateManualOrderTotal()" oninput="calculateManualOrderTotal()" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold" />
+              <input type="number" id="manualOrderQty" min="1" value="1"  required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold" />
             </div>
           </div>
 
@@ -1655,1430 +1655,8 @@
   <!-- ======================================================== -->
   <!-- Complete Interactive Application Logic (JavaScript)     -->
   <!-- ======================================================== -->
-  <script>
-    // -------------------------------------------------------------
-    // 1. Data Store (Mock database & seed sync)
-    // -------------------------------------------------------------
-    const categories = [
-      { id: 'all', name: 'الكل' },
-      { id: 'oriental-oud', name: 'عطور شرقية وعود' },
-      { id: 'french-women', name: 'عطور فرنسية نسائية' },
-      { id: 'luxury-men', name: 'عطور رجالية فخمة' },
-      { id: 'niche-alternatives', name: 'عطور نيش وبدائل' },
-      { id: 'fresh-summer', name: 'عطور صيفية منعشة' }
-    ];
 
-    let products = [
-      {
-        id: 1,
-        name: 'عطر العود الملكي الفاخر - 100 مل',
-        category: 'oriental-oud',
-        brand: 'حبر وورق',
-        price: 1450,
-        comparePrice: 1850,
-        stock: 35,
-        rating: 5.0,
-        reviewsCount: 124,
-        isFeatured: true,
-        image: 'https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&w=600&q=80',
-        desc: 'مزيج ساحر يجمع بين العود الكمبودي المعتق ونفحات العنبر والورد الدمشقي، مصمم لمن يقدر الأصالة والفخامة.',
-        pyramid: { top: 'الورد الدمشقي، الزعفران الإيراني', heart: 'العود الكمبودي المعتق، أخشاب الأرز', base: 'العنبر الفاخر، المسك الصافي' },
-        reviews: [
-          { author: 'محمد إبراهيم', rating: 5, comment: 'عطر أسطوري وثبات يدوم لأكثر من يوم كامل، تجربة استثنائية.' },
-          { author: 'مروة الشاذلي', rating: 5, comment: 'تغليف ملكي ورائحة راقية وفخمة جداً.' }
-        ]
-      },
-      {
-        id: 2,
-        name: 'مسك الطهارة والحرير الأبيض - 50 مل',
-        category: 'oriental-oud',
-        brand: 'أريج الشرق',
-        price: 420,
-        comparePrice: 550,
-        stock: 80,
-        rating: 4.8,
-        reviewsCount: 95,
-        isFeatured: false,
-        image: 'https://images.unsplash.com/photo-1615397349754-cfa2066a298e?auto=format&fit=crop&w=600&q=80',
-        desc: 'نقاء لا يضاهى مع عبير المسك الأبيض المنعش الممزوج بلمسات القطن والبودرة الناعمة.',
-        pyramid: { top: 'زهرة اللوتس، القطن الصافي', heart: 'المسك الأبيض النقي، زنبق الوادي', base: 'البودرة الناعمة، خشب الصندل' },
-        reviews: [
-          { author: 'سارة يوسف', rating: 5, comment: 'ريحته نظافة وانتعاش لا توصف، مناسب جداً بعد الاستحمام.' }
-        ]
-      },
-      {
-        id: 3,
-        name: 'عطر ياسمين باريس الزهري - 75 مل',
-        category: 'french-women',
-        brand: 'Maison De Fleur',
-        price: 1150,
-        comparePrice: 1350,
-        stock: 25,
-        rating: 4.9,
-        reviewsCount: 88,
-        isFeatured: true,
-        image: 'https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&w=600&q=80',
-        desc: 'باقة زهرية متألقة تفيض بأنوثة الياسمين الفرنسي وزهر البرتقال مع قاعدة ناعمة من الفانيليا.',
-        pyramid: { top: 'البرغموت الإيطالي، زهر البرتقال', heart: 'الياسمين الفرنسي، مسك الروم', base: 'الفانيليا المدغشقرية، خشب الأرز' },
-        reviews: [
-          { author: 'رانيا المصرية', rating: 5, comment: 'عطر أنثوي جذاب ورقيق جداً، كل اللي بيشمه بيسألني عليه.' }
-        ]
-      },
-      {
-        id: 4,
-        name: 'عطر ليلة مخملية - 100 مل',
-        category: 'french-women',
-        brand: 'Maison De Fleur',
-        price: 980,
-        comparePrice: null,
-        stock: 40,
-        rating: 4.7,
-        reviewsCount: 52,
-        isFeatured: false,
-        image: 'https://images.unsplash.com/photo-1587017539504-67cfbddac569?auto=format&fit=crop&w=600&q=80',
-        desc: 'عطر مسائي غامض وأنيق يجمع بين التوت البري، أخشاب الكشمير والباتشولي.',
-        pyramid: { top: 'التوت البري، الفلفل الوردي', heart: 'أخشاب الكشمير، الياسمين الليلي', base: 'الباتشولي الإندونيسي، العنبر الرمادي' },
-        reviews: []
-      },
-      {
-        id: 5,
-        name: 'عطر سمو الرجل الأسود - 100 مل',
-        category: 'luxury-men',
-        brand: 'Elite Collection',
-        price: 1320,
-        comparePrice: 1600,
-        stock: 50,
-        rating: 4.9,
-        reviewsCount: 140,
-        isFeatured: true,
-        image: 'https://images.unsplash.com/photo-1523293182086-7651a899d37f?auto=format&fit=crop&w=600&q=80',
-        desc: 'عطر خشبي أروماتك يتميز بالهيل والجلد الفاخر ونجيل الهند، حضور قوي ومهيب.',
-        pyramid: { top: 'الهيل الجواتيمالي، الجريب فروت', heart: 'الجلد الطبيعي، أخشاب الأرز', base: 'نجيل الهند الهايتي، البخور العماني' },
-        reviews: [
-          { author: 'كريم عادل', rating: 5, comment: 'عطر رجالي فخم وقوي جداً للمناسبات والاجتماعات المهمة.' }
-        ]
-      },
-      {
-        id: 6,
-        name: 'توباكو فانيلا نيش - 100 مل',
-        category: 'niche-alternatives',
-        brand: 'Signature Niche',
-        price: 1890,
-        comparePrice: 2200,
-        stock: 18,
-        rating: 5.0,
-        reviewsCount: 76,
-        isFeatured: true,
-        image: 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=600&q=80',
-        desc: 'تحفة عطرية دافئة تتناغم فيها أوراق التبغ الفاخر مع حبوب التونكا والكاكاو والفانيليا الكريمية.',
-        pyramid: { top: 'أوراق التبغ الكاريبي، التوابل العطرية', heart: 'حبوب التونكا، الكاكاو الغني', base: 'الفانيليا الكريمية، الفواكه المجففة' },
-        reviews: [
-          { author: 'م. أحمد خالد', rating: 5, comment: 'أفضل بديل نيش اشتريته في حياتي، فوحان يملأ المكان.' }
-        ]
-      },
-      {
-        id: 7,
-        name: 'نسيم البحر المتوسط الصيفي - 100 مل',
-        category: 'fresh-summer',
-        brand: 'Aqua Pure',
-        price: 690,
-        comparePrice: 850,
-        stock: 65,
-        rating: 4.6,
-        reviewsCount: 43,
-        isFeatured: false,
-        image: 'https://images.unsplash.com/photo-1588405748880-12d1d2a59f75?auto=format&fit=crop&w=600&q=80',
-        desc: 'انتعاش حمضيات صقلية ممزوجة بملوحة أمواج البحر وإكليل الجبل، عطر مثالي للأيام الحارة.',
-        pyramid: { top: 'حمضيات صقلية، المندرين', heart: 'أمواج البحر، إكليل الجبل', base: 'أخشاب الأرز، المسك المعدني' },
-        reviews: []
-      }
-    ];
-
-    // State
-    let cart = [];
-    let wishlist = [];
-    let currentPendingOrder = null;
-    let paymentCountdownInterval = null;
-    let bankListenerAutoTimeout = null;
-    let currentPaymentTotalText = '';
-
-    const defaultOrders = [
-      {
-        id: 'ORD-984120',
-        customerName: 'رانيا المصرية',
-        phone: '01012345678',
-        city: 'القاهرة',
-        address: 'شارع النصر، المعادي الجديدة',
-        paymentMethod: 'instapay',
-        paymentStatus: 'paid',
-        paymentRef: 'IPN-892401829',
-        paymentTime: 'أمس، 02:40 م',
-        itemsCount: 2,
-        total: 1870,
-        status: 'shipped',
-        date: 'أمس، 02:40 م'
-      }
-    ];
-
-    let orders = JSON.parse(localStorage.getItem('perfume_store_orders')) || defaultOrders;
-
-    let currentCategory = 'all';
-    let searchQuery = '';
-    let currentSort = 'featured';
-    let isAdminView = false;
-    let currentUser = { name: 'رانيا المصرية', email: 'customer@example.com', role: 'customer' };
-    let activeCoupon = null; // e.g. { code: 'PERFUME10', discountPercent: 10 }
-    let lastCreatedOrder = null;
-    let selectedProductId = null;
-
-    // -------------------------------------------------------------
-    // 2. Initialization
-    // -------------------------------------------------------------
-    window.addEventListener('DOMContentLoaded', () => {
-      renderCategories();
-      renderProducts();
-      updateCartUI();
-      updateWishlistUI();
-      updateAdminStats();
-
-      // Welcome Notification & Audio Chime on Site Open
-      setTimeout(() => {
-        showToast('مرحباً بك في قصر العطور ✨ متجر معتمد ومحمي 100% 🛡️', '👑');
-        playWelcomeChime();
-      }, 700);
-    });
-
-    // -------------------------------------------------------------
-    // 3. Render Catalog & Categories
-    // -------------------------------------------------------------
-    function renderCategories() {
-      const container = document.getElementById('categoriesContainer');
-      container.innerHTML = categories.map(cat => {
-        const isActive = cat.id === currentCategory;
-        return `
-          <button 
-            onclick="setCategory('${cat.id}')"
-            class="whitespace-nowrap px-3.5 py-1.5 rounded-full text-xs font-bold transition-all ${
-              isActive 
-                ? 'bg-amber-600 text-white shadow-md shadow-amber-600/30' 
-                : 'bg-white text-slate-600 border border-slate-200 hover:border-amber-300 hover:text-amber-700'
-            }"
-          >
-            ${cat.name}
-          </button>
-        `;
-      }).join('');
-    }
-
-    function renderProducts() {
-      const grid = document.getElementById('productsGrid');
-      const emptyState = document.getElementById('emptyState');
-      const countEl = document.getElementById('productsCount');
-
-      let filtered = products.filter(p => {
-        const matchesCat = currentCategory === 'all' || p.category === currentCategory;
-        const matchesQ = !searchQuery || 
-          p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.brand.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.desc.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchesCat && matchesQ;
-      });
-
-      if (currentSort === 'price_asc') filtered.sort((a, b) => a.price - b.price);
-      else if (currentSort === 'price_desc') filtered.sort((a, b) => b.price - a.price);
-      else if (currentSort === 'rating') filtered.sort((a, b) => b.rating - a.rating);
-      else if (currentSort === 'featured') filtered.sort((a, b) => (b.isFeatured ? 1 : 0) - (a.isFeatured ? 1 : 0));
-
-      countEl.textContent = filtered.length;
-
-      if (filtered.length === 0) {
-        grid.innerHTML = '';
-        emptyState.classList.remove('hidden');
-        return;
-      }
-
-      emptyState.classList.add('hidden');
-      grid.innerHTML = filtered.map(p => {
-        const discount = p.comparePrice ? Math.round(((p.comparePrice - p.price) / p.comparePrice) * 100) : 0;
-        const isFav = wishlist.includes(p.id);
-
-        return `
-          <div class="bg-white rounded-3xl border border-slate-200 overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col group relative">
-            
-            <!-- Image & Header Badges -->
-            <div class="relative h-56 bg-slate-100 overflow-hidden cursor-pointer" onclick="openProductDetailModal(${p.id})">
-              <img 
-                src="${p.image}" 
-                alt="${p.name}" 
-                loading="lazy"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-              />
-              
-              <div class="absolute top-3 right-3 flex flex-col gap-1 items-end">
-                ${p.isFeatured ? `<span class="bg-slate-900/90 text-amber-300 text-[10px] font-black px-2.5 py-1 rounded-full shadow backdrop-blur-sm">⭐ الأكثر طلباً</span>` : ''}
-                ${discount > 0 ? `<span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-full shadow">خصم ${discount}%</span>` : ''}
-              </div>
-
-              <!-- Wishlist Heart Toggle -->
-              <button 
-                onclick="event.stopPropagation(); toggleWishlistItem(${p.id})"
-                class="absolute top-3 left-3 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-base flex items-center justify-center shadow transition active:scale-90"
-                title="${isFav ? 'إزالة من المفضلة' : 'حفظ في المفضلة'}"
-              >
-                ${isFav ? '❤️' : '🤍'}
-              </button>
-
-              <span class="absolute bottom-3 left-3 bg-white/90 text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded-md shadow backdrop-blur-sm">
-                ${p.brand}
-              </span>
-            </div>
-
-            <!-- Content Area -->
-            <div class="p-5 flex-1 flex flex-col justify-between">
-              <div>
-                <div class="flex items-center gap-1.5 text-xs text-amber-500 mb-1.5">
-                  <span>★</span>
-                  <span class="font-bold text-slate-800">${p.rating}</span>
-                  <span class="text-slate-400 text-[11px]">(${p.reviewsCount} تقييم)</span>
-                </div>
-                
-                <h3 
-                  onclick="openProductDetailModal(${p.id})"
-                  class="font-bold text-slate-900 text-sm leading-snug line-clamp-1 mb-1.5 cursor-pointer hover:text-amber-700 transition" 
-                  title="${p.name}"
-                >
-                  ${p.name}
-                </h3>
-                
-                <p class="text-xs text-slate-500 line-clamp-2 leading-relaxed mb-4">
-                  ${p.desc}
-                </p>
-              </div>
-
-              <!-- Price & CTA -->
-              <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
-                <div>
-                  <div class="text-base sm:text-lg font-black text-amber-700">
-                    ${p.price.toLocaleString('ar-EG')} <span class="text-xs font-normal">ج.م</span>
-                  </div>
-                  ${p.comparePrice ? `
-                    <div class="text-xs text-slate-400 line-through">
-                      ${p.comparePrice.toLocaleString('ar-EG')} ج.م
-                    </div>
-                  ` : ''}
-                </div>
-
-                <div class="flex items-center gap-1.5">
-                  <button 
-                    onclick="openProductDetailModal(${p.id})"
-                    class="p-2.5 rounded-xl border border-slate-200 text-slate-600 hover:bg-slate-100 text-xs font-bold"
-                    title="التفاصيل والمكونات"
-                  >
-                    👁️
-                  </button>
-                  <button 
-                    onclick="addToCart(${p.id})"
-                    class="bg-amber-600 hover:bg-amber-700 active:scale-95 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl shadow-md shadow-amber-600/20 flex items-center gap-1 transition"
-                  >
-                    <span>+</span>
-                    <span>شراء</span>
-                  </button>
-                </div>
-              </div>
-
-            </div>
-
-          </div>
-        `;
-      }).join('');
-    }
-
-    function setCategory(id) { currentCategory = id; renderCategories(); renderProducts(); }
-    function handleSearch(q) { searchQuery = q.trim(); renderProducts(); }
-    function clearSearch() { document.getElementById('searchInput').value = ''; searchQuery = ''; renderProducts(); }
-    function handleSort(v) { currentSort = v; renderProducts(); }
-    function resetFilters() { currentCategory = 'all'; searchQuery = ''; clearSearch(); renderCategories(); renderProducts(); }
-
-    // -------------------------------------------------------------
-    // 4. Product Details Modal & Review Engine
-    // -------------------------------------------------------------
-    function openProductDetailModal(id) {
-      selectedProductId = id;
-      const product = products.find(p => p.id === id);
-      if (!product) return;
-
-      document.getElementById('modalProductImage').src = product.image;
-      document.getElementById('modalProductName').textContent = product.name;
-      document.getElementById('modalProductBrand').textContent = product.brand;
-      document.getElementById('modalProductDesc').textContent = product.desc;
-      document.getElementById('modalProductRating').textContent = product.rating;
-      document.getElementById('modalProductReviewsCount').textContent = `(${product.reviewsCount} تقييم)`;
-      document.getElementById('modalProductPrice').textContent = `${product.price.toLocaleString('ar-EG')} ج.م`;
-      document.getElementById('modalProductStock').textContent = `${product.stock} زجاجة متبقية`;
-
-      // Fragrance Pyramid
-      const pyr = product.pyramid || { top: 'الورد والبرغموت', heart: 'الياسمين والعود', base: 'العنبر والمسك' };
-      document.getElementById('modalPyramidTop').textContent = pyr.top;
-      document.getElementById('modalPyramidHeart').textContent = pyr.heart;
-      document.getElementById('modalPyramidBase').textContent = pyr.base;
-
-      // Fav button in modal
-      const isFav = wishlist.includes(product.id);
-      const favBtn = document.getElementById('modalFavBtn');
-      favBtn.textContent = isFav ? '❤️' : '🤍';
-      favBtn.onclick = () => {
-        toggleWishlistItem(product.id);
-        favBtn.textContent = wishlist.includes(product.id) ? '❤️' : '🤍';
-      };
-
-      document.getElementById('modalAddToCartBtn').onclick = () => {
-        addToCart(product.id);
-        closeProductDetailModal();
-      };
-
-      // Render reviews
-      renderProductReviews(product);
-
-      document.getElementById('productDetailModal').classList.remove('hidden');
-    }
-
-    function closeProductDetailModal() {
-      document.getElementById('productDetailModal').classList.add('hidden');
-    }
-
-    function renderProductReviews(product) {
-      const container = document.getElementById('modalReviewsList');
-      if (!product.reviews || product.reviews.length === 0) {
-        container.innerHTML = `<p class="text-slate-400 text-xs italic">كن أول من يكتب تقييماً لهذا العطر الرائع!</p>`;
-        return;
-      }
-
-      container.innerHTML = product.reviews.map(r => `
-        <div class="bg-slate-50 p-2.5 rounded-xl border border-slate-100">
-          <div class="flex items-center justify-between mb-1">
-            <span class="font-bold text-slate-800 text-xs">${r.author}</span>
-            <span class="text-amber-500 font-bold text-xs">${'★'.repeat(r.rating)}</span>
-          </div>
-          <p class="text-slate-600 text-[11px]">${r.comment}</p>
-        </div>
-      `).join('');
-    }
-
-    function handleReviewSubmit(e) {
-      e.preventDefault();
-      const product = products.find(p => p.id === selectedProductId);
-      if (!product) return;
-
-      const author = document.getElementById('reviewAuthor').value.trim();
-      const rating = parseInt(document.getElementById('reviewRating').value, 10);
-      const comment = document.getElementById('reviewComment').value.trim();
-
-      if (!product.reviews) product.reviews = [];
-      product.reviews.unshift({ author, rating, comment });
-      product.reviewsCount += 1;
-
-      // Recalculate average
-      const sum = product.reviews.reduce((s, r) => s + r.rating, 0);
-      product.rating = Math.round((sum / product.reviews.length) * 10) / 10;
-
-      document.getElementById('reviewComment').value = '';
-      renderProductReviews(product);
-      renderProducts();
-      showToast('شكراً لمشاركتك! تم نشر مراجعتك فورياً ✨');
-    }
-
-    // -------------------------------------------------------------
-    // 5. Wishlist Management
-    // -------------------------------------------------------------
-    function toggleWishlistItem(id) {
-      const idx = wishlist.indexOf(id);
-      const prod = products.find(p => p.id === id);
-      if (idx > -1) {
-        wishlist.splice(idx, 1);
-        showToast(`تمت الإزالة من المفضلة: ${prod ? prod.name : ''}`);
-      } else {
-        wishlist.push(id);
-        showToast(`تم الحفظ في المفضلة ❤️: ${prod ? prod.name : ''}`);
-      }
-      updateWishlistUI();
-      renderProducts();
-    }
-
-    function updateWishlistUI() {
-      const badge = document.getElementById('wishlistCountBadge');
-      const headerCount = document.getElementById('wishlistHeaderCount');
-      const container = document.getElementById('wishlistItemsContainer');
-
-      headerCount.textContent = wishlist.length;
-      if (wishlist.length > 0) {
-        badge.textContent = wishlist.length;
-        badge.classList.remove('hidden');
-      } else {
-        badge.classList.add('hidden');
-      }
-
-      const favProducts = products.filter(p => wishlist.includes(p.id));
-
-      if (favProducts.length === 0) {
-        container.innerHTML = `
-          <div class="text-center py-16">
-            <div class="text-5xl mb-3">❤️</div>
-            <p class="font-bold text-slate-800 text-sm mb-1">قائمة المفضلة فارغة</p>
-            <p class="text-xs text-slate-400">احفظ العطور التي تنوي شراؤها لاحقاً بالضغط على القلب!</p>
-          </div>
-        `;
-        return;
-      }
-
-      container.innerHTML = favProducts.map(p => `
-        <div class="flex items-center gap-3 py-3">
-          <img src="${p.image}" alt="${p.name}" class="w-14 h-14 object-cover rounded-xl border border-slate-200" />
-          <div class="flex-1">
-            <h4 class="font-bold text-slate-900 text-xs line-clamp-1">${p.name}</h4>
-            <div class="text-amber-700 font-bold text-xs mt-0.5">${p.price.toLocaleString('ar-EG')} ج.م</div>
-          </div>
-          <div class="flex items-center gap-2">
-            <button onclick="addToCart(${p.id}); toggleWishlistItem(${p.id});" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-1.5 rounded-xl text-xs">
-              نقل للسلة
-            </button>
-            <button onclick="toggleWishlistItem(${p.id})" class="text-slate-400 hover:text-red-500 text-sm p-1">
-              ✕
-            </button>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function toggleWishlist(show) {
-      document.getElementById('wishlistDrawer').classList.toggle('hidden', !show);
-    }
-
-    // -------------------------------------------------------------
-    // 6. Shopping Cart & Coupons
-    // -------------------------------------------------------------
-    function addToCart(productId) {
-      const product = products.find(p => p.id === productId);
-      if (!product) return;
-
-      const item = cart.find(i => i.product.id === productId);
-      if (item) item.quantity += 1;
-      else cart.push({ product, quantity: 1 });
-
-      updateCartUI();
-      showToast(`تمت إضافة "${product.name}" إلى السلة 🛍️`);
-    }
-
-    function updateCartQuantity(productId, delta) {
-      const idx = cart.findIndex(i => i.product.id === productId);
-      if (idx === -1) return;
-      cart[idx].quantity += delta;
-      if (cart[idx].quantity <= 0) cart.splice(idx, 1);
-      updateCartUI();
-    }
-
-    function removeFromCart(productId) {
-      cart = cart.filter(i => i.product.id !== productId);
-      updateCartUI();
-    }
-
-    function updateCartUI() {
-      const badge = document.getElementById('cartCountBadge');
-      const headerCount = document.getElementById('cartHeaderCount');
-      const container = document.getElementById('cartItemsContainer');
-      const subtotalEl = document.getElementById('cartSubtotal');
-      const shippingEl = document.getElementById('cartShipping');
-      const totalEl = document.getElementById('cartTotal');
-      const checkoutBtn = document.getElementById('checkoutBtn');
-      const couponRow = document.getElementById('couponDiscountRow');
-      const couponDiscountEl = document.getElementById('couponDiscountAmount');
-
-      const totalItems = cart.reduce((s, i) => s + i.quantity, 0);
-      badge.textContent = totalItems;
-      headerCount.textContent = `${totalItems} عناصر`;
-
-      const subtotal = cart.reduce((s, i) => s + (i.product.price * i.quantity), 0);
-      
-      // Free shipping threshold (2000 EGP)
-      const shipping = subtotal >= 2000 || subtotal === 0 ? 0 : 50;
-      shippingEl.textContent = shipping === 0 && subtotal > 0 ? 'مجاني (عرض خاص) 🎉' : `${shipping} ج.م`;
-
-      // Apply coupon if valid
-      let discountAmount = 0;
-      if (activeCoupon && subtotal > 0) {
-        discountAmount = Math.round((subtotal * activeCoupon.discountPercent) / 100);
-        couponRow.classList.remove('hidden');
-        document.getElementById('activeCouponCode').textContent = activeCoupon.code;
-        couponDiscountEl.textContent = `-${discountAmount.toLocaleString('ar-EG')} ج.م`;
-      } else {
-        couponRow.classList.add('hidden');
-      }
-
-      const total = Math.max(0, subtotal - discountAmount + shipping);
-
-      subtotalEl.textContent = `${subtotal.toLocaleString('ar-EG')} ج.م`;
-      totalEl.textContent = `${total.toLocaleString('ar-EG')} ج.م`;
-      document.getElementById('modalCheckoutTotal').textContent = `${total.toLocaleString('ar-EG')} ج.م`;
-
-      if (cart.length === 0) {
-        checkoutBtn.disabled = true;
-        checkoutBtn.classList.add('opacity-50', 'cursor-not-allowed');
-        container.innerHTML = `
-          <div class="text-center py-16">
-            <div class="text-5xl mb-3">🛍️</div>
-            <p class="font-bold text-slate-800 text-sm mb-1">سلة مشترياتك فارغة</p>
-            <p class="text-xs text-slate-400">تصفح العطور وأضف ما يعجبك هنا!</p>
-          </div>
-        `;
-        return;
-      }
-
-      checkoutBtn.disabled = false;
-      checkoutBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-
-      container.innerHTML = cart.map(item => `
-        <div class="flex items-center gap-3 py-3">
-          <img src="${item.product.image}" alt="${item.product.name}" class="w-16 h-16 object-cover rounded-xl border border-slate-200" />
-          <div class="flex-1">
-            <h4 class="font-bold text-slate-900 text-xs line-clamp-1">${item.product.name}</h4>
-            <div class="text-amber-700 font-extrabold text-xs mt-0.5">
-              ${(item.product.price * item.quantity).toLocaleString('ar-EG')} ج.م
-            </div>
-            
-            <div class="flex items-center gap-2 mt-2">
-              <button onclick="updateCartQuantity(${item.product.id}, -1)" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs">-</button>
-              <span class="text-xs font-bold text-slate-800">${item.quantity}</span>
-              <button onclick="updateCartQuantity(${item.product.id}, 1)" class="w-6 h-6 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-xs">+</button>
-            </div>
-          </div>
-          <button onclick="removeFromCart(${item.product.id})" class="text-slate-400 hover:text-red-500 p-1 text-sm" title="حذف">
-            🗑️
-          </button>
-        </div>
-      `).join('');
-    }
-
-    function toggleCart(show) {
-      document.getElementById('cartDrawer').classList.toggle('hidden', !show);
-    }
-
-    function applyEnteredCoupon() {
-      const code = document.getElementById('couponInput').value.trim().toUpperCase();
-      applyCouponCode(code);
-    }
-
-    function applyCouponCode(code) {
-      if (code === 'PERFUME10' || code === 'CAIRO2026') {
-        activeCoupon = { code, discountPercent: 10 };
-        showToast(`تم تطبيق كود الخصم (${code}) بنجاح! خصم 10% ✨`);
-        updateCartUI();
-      } else {
-        showToast('كود الخصم غير صالح أو منتهي الصلاحية ✕');
-      }
-    }
-
-    // -------------------------------------------------------------
-    // Helper Utilities: Copy, Barcode & Sound Chime
-    // -------------------------------------------------------------
-    function copyToClipboard(text, label = '') {
-      if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).then(() => {
-          showToast(`تم نسخ ${label}: ${text} 📋`);
-        }).catch(() => fallbackCopy(text, label));
-      } else {
-        fallbackCopy(text, label);
-      }
-    }
-
-    function fallbackCopy(text, label = '') {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      try {
-        document.execCommand('copy');
-        showToast(`تم نسخ ${label}: ${text} 📋`);
-      } catch (err) {
-        showToast(`انسخ يدوياً: ${text}`);
-      }
-      document.body.removeChild(ta);
-    }
-
-    function copyInstapayAmount() {
-      if (currentPaymentTotalText) {
-        copyToClipboard(currentPaymentTotalText.replace(/[^\d]/g, ''), 'المبلغ المطلوب');
-      }
-    }
-
-    function copyFawryRefCode() {
-      const el = document.getElementById('fawryRefCode');
-      if (el) copyToClipboard(el.textContent.replace(/\s+/g, ''), 'رقم سداد فوري');
-    }
-
-    function closePaymentModals() {
-      if (paymentCountdownInterval) clearInterval(paymentCountdownInterval);
-      if (bankListenerAutoTimeout) clearTimeout(bankListenerAutoTimeout);
-      document.getElementById('instapayModal').classList.add('hidden');
-      document.getElementById('fawryModal').classList.add('hidden');
-      document.getElementById('cardModal').classList.add('hidden');
-    }
-
-    function playSuccessChime() {
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        const ctx = new AudioCtx();
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6 (Celebration chord)
-        notes.forEach((freq, idx) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
-          gain.gain.setValueAtTime(0.12, ctx.currentTime + idx * 0.08);
-          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.08 + 0.5);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(ctx.currentTime + idx * 0.08);
-          osc.stop(ctx.currentTime + idx * 0.08 + 0.55);
-        });
-      } catch(e) {
-        console.log('Audio not supported or blocked:', e);
-      }
-    }
-
-    function playWelcomeChime() {
-      try {
-        const AudioCtx = window.AudioContext || window.webkitAudioContext;
-        if (!AudioCtx) return;
-        const ctx = new AudioCtx();
-        const notes = [440, 554.37, 659.25]; // A4, C#5, E5 (Soft luxury welcome chord)
-        notes.forEach((freq, idx) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'sine';
-          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
-          gain.gain.setValueAtTime(0.05, ctx.currentTime + idx * 0.08);
-          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.08 + 0.4);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(ctx.currentTime + idx * 0.08);
-          osc.stop(ctx.currentTime + idx * 0.08 + 0.45);
-        });
-      } catch(e) {}
-    }
-
-    function startPaymentCountdown(elementId, minutes) {
-      if (paymentCountdownInterval) clearInterval(paymentCountdownInterval);
-      let seconds = minutes * 60;
-      const el = document.getElementById(elementId);
-      if (!el) return;
-
-      paymentCountdownInterval = setInterval(() => {
-        seconds--;
-        if (seconds <= 0) {
-          clearInterval(paymentCountdownInterval);
-          el.textContent = '00:00 (منتهي)';
-          return;
-        }
-        const m = Math.floor(seconds / 60);
-        const s = seconds % 60;
-        el.textContent = `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-      }, 1000);
-    }
-
-    function renderFawryBarcode(code) {
-      const digits = String(code).split('');
-      let barsSvg = '';
-      let x = 12;
-      // Start guard bars
-      barsSvg += `<rect x="${x}" y="0" width="3" height="48" fill="#0f172a"/>`; x += 5;
-      barsSvg += `<rect x="${x}" y="0" width="2" height="48" fill="#0f172a"/>`; x += 6;
-
-      digits.forEach((d, i) => {
-        const val = parseInt(d, 10);
-        const w1 = (val % 3) + 1.8;
-        const w2 = ((val + 2) % 3) + 1.5;
-        const gap1 = ((val + 1) % 3) + 2.5;
-        const gap2 = 3.5;
-        barsSvg += `<rect x="${x}" y="0" width="${w1}" height="42" fill="#0f172a"/>`;
-        x += w1 + gap1;
-        barsSvg += `<rect x="${x}" y="0" width="${w2}" height="42" fill="#0f172a"/>`;
-        x += w2 + gap2;
-      });
-
-      // End guard bars
-      barsSvg += `<rect x="${x}" y="0" width="2" height="48" fill="#0f172a"/>`; x += 5;
-      barsSvg += `<rect x="${x}" y="0" width="3" height="48" fill="#0f172a"/>`; x += 10;
-
-      const formattedCode = String(code).replace(/(\d{4})(\d{4})/, '$1 $2');
-
-      return `
-        <svg viewBox="0 0 ${x + 6} 64" class="w-full h-16 max-w-[280px] mx-auto select-none">
-          <rect width="100%" height="100%" fill="#ffffff" rx="6"/>
-          ${barsSvg}
-          <text x="${(x+6)/2}" y="58" text-anchor="middle" font-family="monospace" font-size="11" font-weight="900" fill="#0f172a" letter-spacing="3">${formattedCode}</text>
-        </svg>
-      `;
-    }
-
-    // -------------------------------------------------------------
-    // 7. Checkout & Payment Simulation
-    // -------------------------------------------------------------
-    function openCheckoutModal() {
-      if (cart.length === 0) return;
-      toggleCart(false);
-      document.getElementById('checkoutModal').classList.remove('hidden');
-    }
-
-    function closeCheckoutModal() {
-      document.getElementById('checkoutModal').classList.add('hidden');
-    }
-
-    function handleCheckoutSubmit(e) {
-      e.preventDefault();
-      const method = document.querySelector('input[name="paymentMethod"]:checked').value;
-      const custName = document.getElementById('custName').value.trim();
-      const custPhone = document.getElementById('custPhone').value.trim();
-      const custAddress = document.getElementById('custAddress').value.trim();
-      const custCity = document.getElementById('custCity').value;
-
-      const subtotal = cart.reduce((s, i) => s + (i.product.price * i.quantity), 0);
-      const discount = activeCoupon ? Math.round((subtotal * activeCoupon.discountPercent) / 100) : 0;
-      const shipping = subtotal >= 2000 ? 0 : 50;
-      const total = subtotal - discount + shipping;
-      const orderNum = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-
-      currentPendingOrder = {
-        id: orderNum,
-        customerName: custName,
-        phone: custPhone,
-        city: custCity,
-        address: `${custAddress} - ${custCity}`,
-        paymentMethod: method,
-        paymentStatus: (method === 'cod' ? 'cod_pending' : 'pending'),
-        paymentRef: '',
-        paymentTime: '',
-        itemsCount: cart.reduce((s, i) => s + i.quantity, 0),
-        total: total,
-        status: 'pending',
-        date: 'الآن'
-      };
-
-      currentPaymentTotalText = `${total.toLocaleString('ar-EG')} ج.م`;
-      closeCheckoutModal();
-
-      if (method === 'instapay') {
-        document.getElementById('instapayAmount').textContent = currentPaymentTotalText;
-        
-        // Dynamic QR code with exact amount and order reference
-        const qrData = encodeURIComponent(`instapay://pay?ipa=perfumepalace@instapay&amount=${total}&ref=${orderNum}&name=PerfumePalace`);
-        document.getElementById('instapayQrImage').src = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=4&data=${qrData}`;
-
-        // Reset states
-        document.getElementById('instapayListeningState').classList.remove('hidden');
-        document.getElementById('instapaySuccessState').classList.add('hidden');
-        document.getElementById('instapayCustRefInput').value = '';
-
-        startPaymentCountdown('instapayCountdownTimer', 10);
-        document.getElementById('instapayModal').classList.remove('hidden');
-
-        // Optional auto-detect simulated bank listener after 14 seconds
-        if (bankListenerAutoTimeout) clearTimeout(bankListenerAutoTimeout);
-        bankListenerAutoTimeout = setTimeout(() => {
-          if (!document.getElementById('instapayModal').classList.contains('hidden') && 
-              currentPendingOrder && currentPendingOrder.paymentStatus !== 'paid') {
-            simulateIncomingBankTransfer();
-          }
-        }, 14000);
-
-      } else if (method === 'fawry') {
-        const refCode = Math.floor(10000000 + Math.random() * 90000000);
-        currentPendingOrder.paymentRef = String(refCode);
-
-        document.getElementById('fawryAmount').textContent = currentPaymentTotalText;
-        document.getElementById('fawryRefCode').textContent = String(refCode).replace(/(\d{4})(\d{4})/, '$1 $2');
-        document.getElementById('fawryBarcodeContainer').innerHTML = renderFawryBarcode(refCode);
-
-        // Reset states
-        document.getElementById('fawryListeningState').classList.remove('hidden');
-        document.getElementById('fawrySuccessState').classList.add('hidden');
-
-        startPaymentCountdown('fawryCountdownTimer', 15);
-        document.getElementById('fawryModal').classList.remove('hidden');
-
-      } else if (method === 'card') {
-        document.getElementById('cardModal').classList.remove('hidden');
-      } else {
-        // COD
-        confirmOrderSuccess('cod');
-      }
-    }
-
-    // Instapay Real-time Listener Events ("الموقع يسمع مسافة ما العميل يحول")
-    function simulateIncomingBankTransfer() {
-      if (!currentPendingOrder) return;
-      if (paymentCountdownInterval) clearInterval(paymentCountdownInterval);
-      if (bankListenerAutoTimeout) clearTimeout(bankListenerAutoTimeout);
-
-      playSuccessChime();
-
-      const ipnRef = 'IPN-' + Math.floor(100000000 + Math.random() * 900000000);
-      const nowTime = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-
-      currentPendingOrder.paymentStatus = 'paid';
-      currentPendingOrder.paymentRef = ipnRef;
-      currentPendingOrder.paymentTime = nowTime;
-      currentPendingOrder.status = 'processing'; // Advance tracking immediately
-
-      document.getElementById('instapayDetectedAmount').textContent = `${currentPendingOrder.total.toLocaleString('ar-EG')}`;
-      document.getElementById('instapayDetectedRef').textContent = ipnRef;
-      document.getElementById('instapayDetectedTime').textContent = nowTime;
-
-      document.getElementById('instapayListeningState').classList.add('hidden');
-      document.getElementById('instapaySuccessState').classList.remove('hidden');
-
-      // Save order to system
-      saveCompletedPendingOrder();
-      showToast('🔔 وصل إشعار بنكي مؤكد! تم إيداع المبلغ في الحساب بنجاح ✓', '🎉');
-    }
-
-    function verifyInstapayTransferManually() {
-      const refInput = document.getElementById('instapayCustRefInput').value.trim();
-      if (!refInput) {
-        showToast('يرجى كتابة رقم العملية المرجعي أو آخر 4 أرقام من حسابك المحول منه');
-        return;
-      }
-      showToast('جاري مطابقة المعاملة مع البنك المركزي لحظياً... ⏳');
-      setTimeout(() => {
-        simulateIncomingBankTransfer();
-      }, 1000);
-    }
-
-    // Fawry Real-time Listener Events ("الموقع يسمع أول ما يدفع في فوري")
-    function simulateIncomingFawryPayment() {
-      if (!currentPendingOrder) return;
-      if (paymentCountdownInterval) clearInterval(paymentCountdownInterval);
-
-      playSuccessChime();
-
-      const fawryReceipt = 'FWR-' + (currentPendingOrder.paymentRef || '98421098') + '-POS';
-      const nowTime = new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' });
-
-      currentPendingOrder.paymentStatus = 'paid';
-      currentPendingOrder.paymentRef = fawryReceipt;
-      currentPendingOrder.paymentTime = nowTime;
-      currentPendingOrder.status = 'processing'; // Advance tracking immediately
-
-      document.getElementById('fawryDetectedReceipt').textContent = fawryReceipt;
-      document.getElementById('fawryDetectedTime').textContent = nowTime;
-
-      document.getElementById('fawryListeningState').classList.add('hidden');
-      document.getElementById('fawrySuccessState').classList.remove('hidden');
-
-      // Save order to system
-      saveCompletedPendingOrder();
-      showToast('🔔 وصل إشعار شبكة فوري! تم سداد الفاتورة وتحصيل المبلغ ✓', '🎉');
-    }
-
-    function saveCompletedPendingOrder() {
-      if (!currentPendingOrder) return;
-      
-      const existingIdx = orders.findIndex(o => o.id === currentPendingOrder.id);
-      if (existingIdx > -1) {
-        orders[existingIdx] = { ...currentPendingOrder };
-      } else {
-        orders.unshift({ ...currentPendingOrder });
-      }
-
-      lastCreatedOrder = { ...currentPendingOrder };
-      localStorage.setItem('perfume_store_orders', JSON.stringify(orders));
-
-      // Clear cart
-      cart = [];
-      updateCartUI();
-      updateAdminStats();
-    }
-
-    function finishPaymentAndGoToTracking() {
-      const orderId = currentPendingOrder ? currentPendingOrder.id : (lastCreatedOrder ? lastCreatedOrder.id : '');
-      closePaymentModals();
-      if (orderId) {
-        openTrackingModal(orderId);
-      }
-    }
-
-    function confirmOrderSuccess(method) {
-      closePaymentModals();
-
-      if (currentPendingOrder) {
-        currentPendingOrder.paymentMethod = method;
-        if (method === 'card') {
-          currentPendingOrder.paymentStatus = 'paid';
-          currentPendingOrder.paymentRef = 'CARD-' + Math.floor(100000 + Math.random() * 900000);
-          currentPendingOrder.status = 'processing';
-        }
-        saveCompletedPendingOrder();
-      }
-
-      const order = currentPendingOrder || lastCreatedOrder;
-      if (!order) return;
-
-      // Update Order Success Modal
-      document.getElementById('successOrderNumber').textContent = order.id;
-      document.getElementById('successPaymentMethod').textContent = 
-        method === 'instapay' ? 'Instapay (إنستاباي)' :
-        method === 'fawry' ? 'فوري (Fawry Pay)' :
-        method === 'card' ? 'بطاقة بنكية' : 'الدفع عند الاستلام';
-      document.getElementById('successAddress').textContent = order.address;
-      document.getElementById('successTotal').textContent = `${order.total.toLocaleString('ar-EG')} ج.م`;
-
-      document.getElementById('orderSuccessModal').classList.remove('hidden');
-    }
-
-    function closeSuccessModal() {
-      document.getElementById('orderSuccessModal').classList.add('hidden');
-    }
-
-    // -------------------------------------------------------------
-    // 8. Live Order Tracking
-    // -------------------------------------------------------------
-    function openTrackingModal(orderId = '') {
-      document.getElementById('trackingModal').classList.remove('hidden');
-      if (orderId) {
-        document.getElementById('trackOrderInput').value = orderId;
-        searchOrderTracking();
-      }
-    }
-
-    function closeTrackingModal() {
-      document.getElementById('trackingModal').classList.add('hidden');
-    }
-
-    function trackCurrentPlacedOrder() {
-      closeSuccessModal();
-      if (lastCreatedOrder) {
-        openTrackingModal(lastCreatedOrder.id);
-      }
-    }
-
-    function searchOrderTracking() {
-      const query = document.getElementById('trackOrderInput').value.trim().toUpperCase();
-      const order = orders.find(o => o.id.toUpperCase() === query);
-      const card = document.getElementById('trackingDetailsCard');
-
-      if (!order) {
-        showToast('لم يتم العثور على طلب بهذا الرقم، تأكد من الصيغة (مثال: ORD-102948)');
-        card.classList.add('hidden');
-        return;
-      }
-
-      card.classList.remove('hidden');
-      document.getElementById('trackOrderNumDisplay').textContent = order.id;
-      document.getElementById('trackCustCityDisplay').textContent = `${order.customerName} (${order.city})`;
-
-      // Status Badge
-      const statusMap = {
-        pending: '1. تم استلام الطلب',
-        processing: '2. جاري التجهيز والتغليف',
-        shipped: '3. مع مندوب الشحن (في الطريق)',
-        delivered: '4. تم التسليم بنجاح ✓'
-      };
-      document.getElementById('trackStatusBadge').textContent = statusMap[order.status] || order.status;
-
-      // Verified Payment Banner in Tracking Card
-      const paymentBanner = document.getElementById('trackPaymentBanner');
-      if (order.paymentStatus === 'paid') {
-        paymentBanner.classList.remove('hidden');
-        paymentBanner.className = 'bg-emerald-50 border border-emerald-200 p-3 rounded-2xl flex items-center justify-between';
-        document.getElementById('trackPaymentStatusTitle').textContent = 
-          order.paymentMethod === 'instapay' ? 'تم استلام الفلوس على الحساب البنكي (إنستاباي) ✓' :
-          order.paymentMethod === 'fawry' ? 'تم سداد الفاتورة بنجاح في فوري ✓' : 'تم الدفع بالبطاقة البنكية معتمداً ✓';
-        document.getElementById('trackPaymentStatusSub').textContent = `الرقم المرجعي: ${order.paymentRef || 'معتمد'}`;
-        document.getElementById('trackPaymentAmountBadge').textContent = `${order.total.toLocaleString('ar-EG')} ج.م`;
-      } else if (order.paymentMethod === 'cod') {
-        paymentBanner.classList.remove('hidden');
-        paymentBanner.className = 'bg-slate-100 border border-slate-200 p-3 rounded-2xl flex items-center justify-between text-slate-700';
-        document.getElementById('trackPaymentStatusTitle').textContent = 'الدفع عند الاستلام لمندوب الشحن';
-        document.getElementById('trackPaymentStatusSub').textContent = 'يتم تحصيل المبلغ نقداً عند المعاينة والاستلام';
-        document.getElementById('trackPaymentAmountBadge').textContent = `${order.total.toLocaleString('ar-EG')} ج.م`;
-      } else {
-        paymentBanner.classList.remove('hidden');
-        paymentBanner.className = 'bg-amber-50 border border-amber-200 p-3 rounded-2xl flex items-center justify-between text-amber-900';
-        document.getElementById('trackPaymentStatusTitle').textContent = 'بانتظار تأكيد التحويل';
-        document.getElementById('trackPaymentStatusSub').textContent = `كود السداد: ${order.paymentRef || 'قيد الانتظار'}`;
-        document.getElementById('trackPaymentAmountBadge').textContent = `${order.total.toLocaleString('ar-EG')} ج.م`;
-      }
-
-      // Update timeline highlights
-      const steps = ['pending', 'processing', 'shipped', 'delivered'];
-      const currentIdx = steps.indexOf(order.status);
-
-      steps.forEach((step, idx) => {
-        const el = document.getElementById(`step-${step}`);
-        const dot = el.querySelector('span');
-        if (idx <= currentIdx) {
-          dot.className = 'absolute -right-6 w-4 h-4 rounded-full bg-emerald-500 border-2 border-white shadow';
-          el.querySelector('div span:first-child').className = 'font-bold text-emerald-800 block text-xs';
-        } else {
-          dot.className = 'absolute -right-6 w-4 h-4 rounded-full bg-slate-300 border-2 border-white';
-          el.querySelector('div span:first-child').className = 'font-bold text-slate-400 block text-xs';
-        }
-      });
-    }
-
-    // -------------------------------------------------------------
-    // 9. Admin Operations (CRUD & Status Updates)
-    // -------------------------------------------------------------
-    function toggleRole() {
-      isAdminView = !isAdminView;
-      const adminView = document.getElementById('adminView');
-      const heroSection = document.getElementById('heroSection');
-      const badge = document.getElementById('roleBadge');
-
-      if (isAdminView) {
-        adminView.classList.remove('hidden');
-        heroSection.classList.add('hidden');
-        badge.textContent = '👤 وضع العميل';
-        updateAdminStats();
-      } else {
-        adminView.classList.add('hidden');
-        heroSection.classList.remove('hidden');
-        badge.textContent = '🛡️ المشرف';
-      }
-    }
-
-    function updateAdminStats() {
-      document.getElementById('adminTotalProducts').textContent = products.length;
-      document.getElementById('adminTotalOrders').textContent = orders.length;
-
-      const totalRev = orders.reduce((s, o) => s + o.total, 0);
-      document.getElementById('adminTotalRevenue').textContent = `${totalRev.toLocaleString('ar-EG')} ج.م`;
-
-      const aov = orders.length > 0 ? Math.round(totalRev / orders.length) : 0;
-      document.getElementById('adminAvgOrder').textContent = `${aov.toLocaleString('ar-EG')} ج.م`;
-
-      // Render Admin Orders Table
-      const orderTbody = document.getElementById('adminOrdersTableBody');
-      if (orders.length === 0) {
-        orderTbody.innerHTML = `<tr><td colspan="7" class="p-6 text-center text-slate-400">لا توجد طلبات مسجلة بعد.</td></tr>`;
-      } else {
-        orderTbody.innerHTML = orders.map(o => `
-          <tr class="hover:bg-slate-50 transition">
-            <td class="p-3 font-mono font-bold text-amber-700">${o.id}</td>
-            <td class="p-3 font-bold text-slate-900">${o.customerName}</td>
-            <td class="p-3 text-[11px] text-slate-500">${o.phone} • ${o.city}</td>
-            <td class="p-3">
-              ${
-                o.paymentMethod === 'instapay'
-                  ? `<div class="space-y-0.5">
-                       <span class="inline-flex items-center gap-1 bg-purple-100 text-purple-900 border border-purple-200 px-2 py-0.5 rounded-lg text-[10px] font-bold">⚡ إنستاباي ${o.paymentStatus === 'paid' ? '✓' : ''}</span>
-                       ${o.paymentStatus === 'paid' ? `<span class="block text-[9px] font-mono text-purple-700 font-bold">${o.paymentRef || 'IPN-معتمد'}</span>` : '<span class="block text-[9px] text-amber-700">بانتظار التحويل</span>'}
-                     </div>`
-                  : o.paymentMethod === 'fawry'
-                  ? `<div class="space-y-0.5">
-                       <span class="inline-flex items-center gap-1 bg-amber-100 text-amber-900 border border-amber-300 px-2 py-0.5 rounded-lg text-[10px] font-bold">🔶 فوري ${o.paymentStatus === 'paid' ? '✓' : ''}</span>
-                       <span class="block text-[9px] font-mono text-amber-800 font-bold">${o.paymentRef || 'كود: 98421098'}</span>
-                     </div>`
-                  : o.paymentMethod === 'card'
-                  ? `<span class="inline-flex items-center gap-1 bg-blue-100 text-blue-900 px-2 py-0.5 rounded-lg text-[10px] font-bold">💳 بطاقة بنكية ✓</span>`
-                  : `<span class="inline-flex items-center gap-1 bg-slate-100 text-slate-700 px-2 py-0.5 rounded-lg text-[10px] font-bold">💵 عند الاستلام</span>`
-              }
-            </td>
-            <td class="p-3 font-black text-amber-900">${o.total.toLocaleString('ar-EG')} ج.م</td>
-            <td class="p-3">
-              <span class="inline-block px-2.5 py-1 rounded-full text-[10px] font-bold ${
-                o.status === 'delivered' ? 'bg-emerald-100 text-emerald-800' :
-                o.status === 'shipped' ? 'bg-blue-100 text-blue-800' :
-                o.status === 'processing' ? 'bg-purple-100 text-purple-800' :
-                'bg-amber-100 text-amber-800'
-              }">
-                ${o.status === 'pending' ? '⏳ قيد المراجعة' : o.status === 'processing' ? '⚙️ قيد التجهيز' : o.status === 'shipped' ? '🚚 تم الشحن' : '✓ تم التسليم'}
-              </span>
-            </td>
-            <td class="p-3 flex items-center gap-1.5">
-              <select onchange="changeOrderStatus('${o.id}', this.value)" class="bg-white border border-slate-200 rounded-lg px-2 py-1 text-[11px] focus:ring-1 focus:ring-amber-600">
-                <option value="pending" ${o.status==='pending'?'selected':''}>قيد المراجعة</option>
-                <option value="processing" ${o.status==='processing'?'selected':''}>قيد التجهيز</option>
-                <option value="shipped" ${o.status==='shipped'?'selected':''}>تم الشحن</option>
-                <option value="delivered" ${o.status==='delivered'?'selected':''}>تم التسليم</option>
-              </select>
-              <button onclick="deleteOrder('${o.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded-lg text-xs font-bold transition" title="حذف الطلب">
-                🗑️
-              </button>
-            </td>
-          </tr>
-        `).join('');
-      }
-
-      // Render Admin Products Table
-      const prodTbody = document.getElementById('adminProductsTableBody');
-      prodTbody.innerHTML = products.map(p => `
-        <tr class="hover:bg-slate-50 transition">
-          <td class="p-3 flex items-center gap-2">
-            <img src="${p.image}" class="w-8 h-8 rounded-lg object-cover" />
-            <span class="font-bold text-slate-800 line-clamp-1">${p.name}</span>
-          </td>
-          <td class="p-3 text-[11px] text-slate-500">${p.category}</td>
-          <td class="p-3 font-bold text-amber-700">${p.price} ج.م</td>
-          <td class="p-3 font-bold text-slate-700">${p.stock} قطعة</td>
-          <td class="p-3 flex items-center gap-2">
-            <button onclick="openEditProductModal(${p.id})" class="text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-lg font-bold text-xs transition flex items-center gap-1">
-              ✏️ تعديل
-            </button>
-            <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-lg font-bold text-xs transition flex items-center gap-1">
-              🗑️ حذف
-            </button>
-          </td>
-        </tr>
-      `).join('');
-    }
-
-    function changeOrderStatus(orderId, newStatus) {
-      const order = orders.find(o => o.id === orderId);
-      if (order) {
-        order.status = newStatus;
-        localStorage.setItem('perfume_store_orders', JSON.stringify(orders));
-        updateAdminStats();
-        showToast(`تم تحديث حالة الطلب (${orderId}) إلى: ${newStatus}`);
-      }
-    }
-
-    function refreshAdminData() {
-      updateAdminStats();
-      showToast('تم تحديث بيانات لوحة المشرف ✓');
-    }
-
-    function openAddProductModal() {
-      document.getElementById('addProductModal').classList.remove('hidden');
-    }
-
-    function closeAddProductModal() {
-      document.getElementById('addProductModal').classList.add('hidden');
-    }
-
-    function handleCreateProduct(e) {
-      e.preventDefault();
-      const name = document.getElementById('newProdName').value.trim();
-      const category = document.getElementById('newProdCategory').value;
-      const brand = document.getElementById('newProdBrand').value.trim();
-      const price = parseFloat(document.getElementById('newProdPrice').value);
-      const comparePrice = parseFloat(document.getElementById('newProdCompare').value) || null;
-      const stock = parseInt(document.getElementById('newProdStock').value, 10);
-      const image = document.getElementById('newProdImage').value.trim();
-      const desc = document.getElementById('newProdDesc').value.trim();
-      const top = document.getElementById('newProdPyramidTop').value.trim() || 'البرغموت والورد';
-      const heart = document.getElementById('newProdPyramidHeart').value.trim() || 'الياسمين والعود';
-      const base = document.getElementById('newProdPyramidBase').value.trim() || 'العنبر والمسك';
-
-      const newProd = {
-        id: Date.now(),
-        name,
-        category,
-        brand,
-        price,
-        comparePrice,
-        stock,
-        rating: 5.0,
-        reviewsCount: 1,
-        isFeatured: true,
-        image,
-        desc,
-        pyramid: { top, heart, base },
-        reviews: []
-      };
-
-      products.unshift(newProd);
-      closeAddProductModal();
-      renderProducts();
-      updateAdminStats();
-      showToast(`تمت إضافة العطر الجديد "${name}" إلى المتجر بنجاح! 🎉`);
-    }
-
-    function openEditProductModal(id) {
-      const prod = products.find(p => p.id === id);
-      if (!prod) return;
-
-      document.getElementById('editProdId').value = prod.id;
-      document.getElementById('editProdName').value = prod.name;
-      document.getElementById('editProdCategory').value = prod.category;
-      document.getElementById('editProdBrand').value = prod.brand;
-      document.getElementById('editProdPrice').value = prod.price;
-      document.getElementById('editProdCompare').value = prod.comparePrice || '';
-      document.getElementById('editProdStock').value = prod.stock;
-      document.getElementById('editProdImage').value = prod.image;
-      document.getElementById('editProdImgPreview').src = prod.image;
-      document.getElementById('editProdDesc').value = prod.desc;
-
-      const pyr = prod.pyramid || { top: '', heart: '', base: '' };
-      document.getElementById('editProdPyramidTop').value = pyr.top || '';
-      document.getElementById('editProdPyramidHeart').value = pyr.heart || '';
-      document.getElementById('editProdPyramidBase').value = pyr.base || '';
-
-      document.getElementById('editProductModal').classList.remove('hidden');
-    }
-
-    function closeEditProductModal() {
-      document.getElementById('editProductModal').classList.add('hidden');
-    }
-
-    function handleUpdateProduct(e) {
-      e.preventDefault();
-      const id = parseInt(document.getElementById('editProdId').value, 10);
-      const prod = products.find(p => p.id === id);
-      if (!prod) return;
-
-      prod.name = document.getElementById('editProdName').value.trim();
-      prod.category = document.getElementById('editProdCategory').value;
-      prod.brand = document.getElementById('editProdBrand').value.trim();
-      prod.price = parseFloat(document.getElementById('editProdPrice').value);
-      prod.comparePrice = parseFloat(document.getElementById('editProdCompare').value) || null;
-      prod.stock = parseInt(document.getElementById('editProdStock').value, 10);
-      prod.image = document.getElementById('editProdImage').value.trim();
-      prod.desc = document.getElementById('editProdDesc').value.trim();
-
-      prod.pyramid = {
-        top: document.getElementById('editProdPyramidTop').value.trim() || 'البرغموت والورد',
-        heart: document.getElementById('editProdPyramidHeart').value.trim() || 'الياسمين والعود',
-        base: document.getElementById('editProdPyramidBase').value.trim() || 'العنبر والمسك'
-      };
-
-      closeEditProductModal();
-      renderProducts();
-      updateAdminStats();
-      showToast(`تم تحديث بيانات ومكونات "${prod.name}" بنجاح! ✨`);
-    }
-
-    function deleteProduct(id) {
-      if (!confirm('هل أنت متأكد من حذف هذا العطر من المتجر؟')) return;
-      products = products.filter(p => p.id !== id);
-      renderProducts();
-      updateAdminStats();
-      showToast('تم حذف المنتج من الكتالوج 🗑️');
-    }
-
-    function openAddOrderModal() {
-      const prodSelect = document.getElementById('manualOrderProduct');
-      prodSelect.innerHTML = products.map(p => `
-        <option value="${p.id}" data-price="${p.price}">${p.name} (${p.price} ج.م)</option>
-      `).join('');
-      calculateManualOrderTotal();
-      document.getElementById('addOrderModal').classList.remove('hidden');
-    }
-
-    function closeAddOrderModal() {
-      document.getElementById('addOrderModal').classList.add('hidden');
-    }
-
-    function calculateManualOrderTotal() {
-      const prodSelect = document.getElementById('manualOrderProduct');
-      const selectedOption = prodSelect.options[prodSelect.selectedIndex];
-      const price = selectedOption ? parseFloat(selectedOption.getAttribute('data-price') || 0) : 0;
-      const qty = parseInt(document.getElementById('manualOrderQty').value || 1, 10);
-      const subtotal = price * qty;
-      const shipping = subtotal >= 2000 ? 0 : 50;
-      const total = subtotal + shipping;
-      document.getElementById('manualOrderTotalDisplay').textContent = `${total.toLocaleString('ar-EG')} ج.م`;
-      return total;
-    }
-
-    function handleCreateOrderManual(e) {
-      e.preventDefault();
-      const name = document.getElementById('manualCustName').value.trim();
-      const phone = document.getElementById('manualCustPhone').value.trim();
-      const city = document.getElementById('manualCustCity').value;
-      const address = document.getElementById('manualCustAddress').value.trim();
-      const qty = parseInt(document.getElementById('manualOrderQty').value || 1, 10);
-      const paymentMethod = document.getElementById('manualPaymentMethod').value;
-      const status = document.getElementById('manualOrderStatus').value;
-      const total = calculateManualOrderTotal();
-      const orderNum = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
-
-      const newOrder = {
-        id: orderNum,
-        customerName: name,
-        phone: phone,
-        city: city,
-        address: `${address} - ${city}`,
-        paymentMethod: paymentMethod,
-        paymentStatus: (paymentMethod === 'cod' ? 'cod_pending' : 'paid'),
-        paymentRef: (paymentMethod === 'instapay' ? 'IPN-' + Math.floor(100000000 + Math.random()*900000000) : paymentMethod === 'fawry' ? 'FWR-' + Math.floor(10000000 + Math.random()*90000000) : 'MANUAL'),
-        paymentTime: 'الآن',
-        itemsCount: qty,
-        total: total,
-        status: status,
-        date: 'الآن (إدخال يدوي)'
-      };
-
-      orders.unshift(newOrder);
-      localStorage.setItem('perfume_store_orders', JSON.stringify(orders));
-      closeAddOrderModal();
-      updateAdminStats();
-      showToast(`تمت إضافة الطلب (${orderNum}) بنجاح! 📦`);
-    }
-
-    function deleteOrder(orderId) {
-      if (!confirm(`هل أنت متأكد من حذف الطلب (${orderId}) نهائياً من النظام؟`)) return;
-      orders = orders.filter(o => o.id !== orderId);
-      localStorage.setItem('perfume_store_orders', JSON.stringify(orders));
-      updateAdminStats();
-      showToast(`تم حذف الطلب (${orderId}) بنجاح 🗑️`);
-    }
-
-    // -------------------------------------------------------------
-    // 10. User Auth & Profiles
-    // -------------------------------------------------------------
-    function openAuthModal() {
-      document.getElementById('authModal').classList.remove('hidden');
-    }
-
-    function closeAuthModal() {
-      document.getElementById('authModal').classList.add('hidden');
-    }
-
-    function prefillAccount(type) {
-      if (type === 'admin') {
-        document.getElementById('authEmail').value = 'admin@perfumestore.eg';
-        document.getElementById('authPassword').value = 'Admin@12345';
-      } else {
-        document.getElementById('authEmail').value = 'customer@example.com';
-        document.getElementById('authPassword').value = 'Customer@12345';
-      }
-    }
-
-    function handleAuthSubmit(e) {
-      e.preventDefault();
-      const email = document.getElementById('authEmail').value.trim();
-      if (email.includes('admin')) {
-        currentUser = { name: 'مدير المتجر', email, role: 'admin' };
-        document.getElementById('navUserName').textContent = 'مدير المتجر';
-        closeAuthModal();
-        showToast('تم تسجيل الدخول كمسؤول للمتجر 🛡️');
-        if (!isAdminView) toggleRole();
-      } else {
-        currentUser = { name: 'رانيا المصرية', email, role: 'customer' };
-        document.getElementById('navUserName').textContent = 'رانيا';
-        closeAuthModal();
-        showToast('مرحباً بعودتك يا رانيا! ✨');
-      }
-    }
-
-    // -------------------------------------------------------------
-    // 11. Toast Notifications
-    // -------------------------------------------------------------
-    function showToast(message, icon = '✨') {
-      const toast = document.getElementById('toast');
-      document.getElementById('toastMessage').textContent = message;
-      document.getElementById('toastIcon').textContent = icon;
-
-      toast.classList.remove('translate-y-20', 'opacity-0');
-      toast.classList.add('translate-y-0', 'opacity-100');
-
-      setTimeout(() => {
-        toast.classList.remove('translate-y-0', 'opacity-100');
-        toast.classList.add('translate-y-20', 'opacity-0');
-      }, 3000);
-    }
-  </script>
+  <!-- External Modular JavaScript (Strict CSP & Zero Inline Code) -->
+  <script src="app.js" defer></script>
 </body>
 </html>
