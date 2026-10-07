@@ -1,6 +1,17 @@
+// =====================================================================
+// Anti-Clickjacking Frame-Busting Protection (Defends against iFrame hijacking)
+// =====================================================================
+if (window.top !== window.self) {
+  try {
+    window.top.location = window.self.location;
+  } catch (e) {
+    document.documentElement.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100vh;background:#0f172a;color:#f8fafc;font-family:sans-serif;text-align:center;padding:24px;direction:rtl;"><div><h2 style="font-size:20px;font-weight:bold;margin-bottom:8px;">🔒 محمي ضد هجمات الاختطاف (Clickjacking Protected)</h2><p style="font-size:14px;color:#94a3b8;">لا يمكن عرض متجر قصر العطور داخل إطارات خارجية لأسباب أمنية مشددة.</p></div></div>';
+  }
+}
+
 // -------------------------------------------------------------
-    // 1. Data Store (Mock database & seed sync)
-    // -------------------------------------------------------------
+// 1. Data Store (Mock database & seed sync)
+// -------------------------------------------------------------
     const categories = [
       { id: 'all', name: 'الكل' },
       { id: 'oriental-oud', name: 'عطور شرقية وعود' },
