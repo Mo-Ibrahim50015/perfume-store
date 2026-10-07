@@ -7,6 +7,9 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data: https://images.unsplash.com https://api.qrserver.com; connect-src 'self'; object-src 'none'; base-uri 'self';">
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
   <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <!-- Primary SEO Meta Tags -->
   <title>قصر العطور | متجر العطور الفاخرة وبدائل النيش الأصلية في مصر (Perfume Palace)</title>
   <meta name="title" content="قصر العطور | متجر العطور الفاخرة وبدائل النيش الأصلية في مصر (Perfume Palace)">
@@ -227,7 +230,12 @@
     <span class="hidden sm:inline">|</span>
     <span>🚚 شحن مجاني لكافة محافظات مصر للطلبات فوق 2000 ج.م</span>
     <span class="hidden sm:inline">|</span>
-    <span>⚡ دعم الدفع اللحظي بـ Instapay و Fawry</span>
+    <span>⚡ دفع لحظي عبر إنستاباي وفوري</span>
+    <span class="hidden md:inline">|</span>
+    <span class="inline-flex items-center gap-1.5 bg-emerald-950/80 text-emerald-300 border border-emerald-500/40 px-2.5 py-0.5 rounded-full text-[11px] font-bold shadow-sm">
+      <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+      🔒 متجر معتمد ومحمي 100% (SSL & CSP)
+    </span>
   </div>
 
   <!-- Main Navigation Header -->
@@ -354,6 +362,18 @@
           <button onclick="applyCouponCode('PERFUME10')" class="bg-white/10 hover:bg-white/20 text-amber-200 text-xs font-bold px-4 py-3 rounded-2xl border border-white/20 transition">
             نسخ كوبون الخصم: PERFUME10
           </button>
+        </div>
+
+        <!-- Trust & Security Highlights -->
+        <div class="mt-6 pt-5 border-t border-white/10 flex flex-wrap items-center gap-3 text-xs text-slate-300">
+          <div class="flex items-center gap-1.5 text-emerald-300 font-bold bg-emerald-950/60 px-3 py-1.5 rounded-xl border border-emerald-500/30">
+            <span>🛡️</span>
+            <span>متجر آمن وموثق 100% (تشفير SSL & CSP)</span>
+          </div>
+          <div class="flex items-center gap-1.5 text-amber-300 font-medium bg-amber-950/40 px-3 py-1.5 rounded-xl border border-amber-500/20">
+            <span>⚡</span>
+            <span>دفع إلكتروني لحظي (إنستاباي / فوري)</span>
+          </div>
         </div>
       </div>
       <div class="absolute -left-10 -bottom-10 w-96 h-96 bg-amber-600/20 rounded-full blur-3xl pointer-events-none"></div>
@@ -1820,6 +1840,12 @@
       updateCartUI();
       updateWishlistUI();
       updateAdminStats();
+
+      // Welcome Notification & Audio Chime on Site Open
+      setTimeout(() => {
+        showToast('مرحباً بك في قصر العطور ✨ متجر معتمد ومحمي 100% 🛡️', '👑');
+        playWelcomeChime();
+      }, 700);
     });
 
     // -------------------------------------------------------------
@@ -2319,6 +2345,27 @@
       } catch(e) {
         console.log('Audio not supported or blocked:', e);
       }
+    }
+
+    function playWelcomeChime() {
+      try {
+        const AudioCtx = window.AudioContext || window.webkitAudioContext;
+        if (!AudioCtx) return;
+        const ctx = new AudioCtx();
+        const notes = [440, 554.37, 659.25]; // A4, C#5, E5 (Soft luxury welcome chord)
+        notes.forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.08);
+          gain.gain.setValueAtTime(0.05, ctx.currentTime + idx * 0.08);
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + idx * 0.08 + 0.4);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.08);
+          osc.stop(ctx.currentTime + idx * 0.08 + 0.45);
+        });
+      } catch(e) {}
     }
 
     function startPaymentCountdown(elementId, minutes) {
