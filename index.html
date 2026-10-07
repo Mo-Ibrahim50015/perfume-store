@@ -174,7 +174,10 @@
           <p class="text-xs text-slate-500 mt-1">إدارة المنتجات، تحديث المخزون، والتحكم في حالات شحن الطلبات (P0-F008 & P0-F009)</p>
         </div>
         <div class="flex items-center gap-2">
-          <button onclick="openAddProductModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
+          <button onclick="openAddOrderModal()" class="bg-emerald-600 hover:bg-emerald-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
+            <span>+</span> إضافة طلب يدوياً
+          </button>
+          <button onclick="openAddProductModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-3.5 py-2 rounded-xl text-xs font-bold flex items-center gap-1.5 shadow-md">
             <span>+</span> إضافة عطر جديد
           </button>
           <button onclick="refreshAdminData()" class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-3 py-2 rounded-xl text-xs font-bold">
@@ -217,8 +220,8 @@
                 <th class="p-3">الهاتف والمحافظة</th>
                 <th class="p-3">طريقة الدفع</th>
                 <th class="p-3">الإجمالي</th>
-                <th class="p-3">حالة الطلب الحالية</th>
-                <th class="p-3">تغيير الحالة</th>
+                <th class="p-3">حالة الطلب</th>
+                <th class="p-3">إجراءات والتحكم</th>
               </tr>
             </thead>
             <tbody id="adminOrdersTableBody" class="divide-y divide-slate-100 font-medium">
@@ -952,12 +955,215 @@
           </div>
 
           <div>
-            <label class="block font-semibold text-slate-700 mb-1">الوصف والمكونات *</label>
+            <label class="block font-semibold text-slate-700 mb-1">الوصف العام للعطر *</label>
             <textarea id="newProdDesc" required rows="2" placeholder="تركيبة مميزة من العود والعنبر الفاخر..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs"></textarea>
+          </div>
+
+          <!-- Fragrance Pyramid Inputs in Add Modal -->
+          <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3 space-y-2">
+            <span class="font-bold text-amber-900 block text-xs">🏺 الهرم العطري والمكونات:</span>
+            <div>
+              <label class="block text-[11px] text-slate-600 mb-0.5">قمة العطر (المكونات العليا):</label>
+              <input type="text" id="newProdPyramidTop" placeholder="مثال: البرغموت الإيطالي، الورد" class="w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-600 mb-0.5">قلب العطر (المكونات الوسطى):</label>
+              <input type="text" id="newProdPyramidHeart" placeholder="مثال: الياسمين، العود، التوابل" class="w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-600 mb-0.5">قاعدة العطر (المكونات الأساسية):</label>
+              <input type="text" id="newProdPyramidBase" placeholder="مثال: العنبر، المسك، خشب الصندل" class="w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs" />
+            </div>
           </div>
 
           <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-2xl text-xs transition shadow-md">
             نشر العطر في المتجر فوراً ✓
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 10. Edit Product Modal (تعديل العطر والصورة والمكونات)   -->
+  <!-- ======================================================== -->
+  <div id="editProductModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+    <div class="min-h-screen px-4 text-center flex items-center justify-center">
+      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" onclick="closeEditProductModal()"></div>
+      
+      <div class="inline-block w-full max-w-lg p-6 my-8 text-right bg-white rounded-3xl shadow-2xl relative z-10 text-xs">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
+            <span>✏️</span> تعديل بيانات العطر والصورة والمكونات
+          </h3>
+          <button onclick="closeEditProductModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        </div>
+
+        <form onsubmit="handleUpdateProduct(event)" class="space-y-3">
+          <input type="hidden" id="editProdId" />
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">اسم العطر *</label>
+            <input type="text" id="editProdName" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">التصنيف *</label>
+              <select id="editProdCategory" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs">
+                <option value="oriental-oud">عطور شرقية وعود</option>
+                <option value="french-women">عطور فرنسية نسائية</option>
+                <option value="luxury-men">عطور رجالية فخمة</option>
+                <option value="niche-alternatives">عطور نيش وبدائل</option>
+                <option value="fresh-summer">عطور صيفية منعشة</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">الماركة *</label>
+              <input type="text" id="editProdBrand" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">السعر الحالي (ج.م) *</label>
+              <input type="number" id="editProdPrice" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold text-amber-700" />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">السعر قبل الخصم</label>
+              <input type="number" id="editProdCompare" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs" />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">المخزون المتوفر *</label>
+              <input type="number" id="editProdStock" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">رابط صورة العطر (URL) *</label>
+            <div class="flex gap-2">
+              <input type="url" id="editProdImage" required oninput="document.getElementById('editProdImgPreview').src = this.value" class="flex-1 bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-mono" />
+              <img id="editProdImgPreview" src="" class="w-10 h-10 object-cover rounded-xl border border-slate-200 bg-slate-100" />
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">الوصف العام *</label>
+            <textarea id="editProdDesc" required rows="2" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs"></textarea>
+          </div>
+
+          <!-- Fragrance Pyramid Inputs in Edit Modal -->
+          <div class="bg-amber-50/70 border border-amber-200 rounded-xl p-3 space-y-2">
+            <span class="font-bold text-amber-900 block text-xs">🏺 تعديل الهرم العطري والمكونات:</span>
+            <div>
+              <label class="block text-[11px] text-slate-600 mb-0.5">قمة العطر (المكونات العليا):</label>
+              <input type="text" id="editProdPyramidTop" class="w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-600 mb-0.5">قلب العطر (المكونات الوسطى):</label>
+              <input type="text" id="editProdPyramidHeart" class="w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs" />
+            </div>
+            <div>
+              <label class="block text-[11px] text-slate-600 mb-0.5">قاعدة العطر (المكونات الأساسية):</label>
+              <input type="text" id="editProdPyramidBase" class="w-full bg-white border border-slate-200 rounded-lg p-1.5 text-xs" />
+            </div>
+          </div>
+
+          <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-2xl text-xs transition shadow-md">
+            حفظ التعديلات وتحديث العطر فوراً ✓
+          </button>
+        </form>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================================================== -->
+  <!-- 11. Add New Order Modal (إضافة طلب يدوياً للمشرف)        -->
+  <!-- ======================================================== -->
+  <div id="addOrderModal" class="fixed inset-0 z-50 overflow-y-auto hidden">
+    <div class="min-h-screen px-4 text-center flex items-center justify-center">
+      <div class="fixed inset-0 bg-slate-950/70 backdrop-blur-sm" onclick="closeAddOrderModal()"></div>
+      
+      <div class="inline-block w-full max-w-lg p-6 my-8 text-right bg-white rounded-3xl shadow-2xl relative z-10 text-xs">
+        <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+          <h3 class="text-base font-bold text-slate-900 flex items-center gap-1.5">
+            <span>📦</span> إضافة طلب جديد يدوياً إلى النظام
+          </h3>
+          <button onclick="closeAddOrderModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+        </div>
+
+        <form onsubmit="handleCreateOrderManual(event)" class="space-y-3">
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">اسم العميل *</label>
+            <input type="text" id="manualCustName" required placeholder="مثال: أحمد عبد الله" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs" />
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">رقم الهاتف *</label>
+              <input type="tel" id="manualCustPhone" required placeholder="010XXXXXXXX" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs" />
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">المحافظة *</label>
+              <select id="manualCustCity" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs">
+                <option value="القاهرة">القاهرة</option>
+                <option value="الجيزة">الجيزة</option>
+                <option value="الإسكندرية">الإسكندرية</option>
+                <option value="الدقهلية">الدقهلية (المنصورة)</option>
+                <option value="الغربية">الغربية (طنطا)</option>
+                <option value="باقي المحافظات">باقي المحافظات</option>
+              </select>
+            </div>
+          </div>
+
+          <div>
+            <label class="block font-semibold text-slate-700 mb-1">العنوان التفصيلي *</label>
+            <input type="text" id="manualCustAddress" required placeholder="المنطقة، الشارع، رقم العقار..." class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs" />
+          </div>
+
+          <div class="grid grid-cols-3 gap-3">
+            <div class="col-span-2">
+              <label class="block font-semibold text-slate-700 mb-1">اختر العطر المطلوب *</label>
+              <select id="manualOrderProduct" onchange="calculateManualOrderTotal()" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs">
+                <!-- Filled dynamically by JS -->
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">الكمية *</label>
+              <input type="number" id="manualOrderQty" min="1" value="1" onchange="calculateManualOrderTotal()" oninput="calculateManualOrderTotal()" required class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3">
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">طريقة الدفع *</label>
+              <select id="manualPaymentMethod" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs">
+                <option value="instapay">Instapay (إنستاباي)</option>
+                <option value="fawry">فوري (Fawry Pay)</option>
+                <option value="card">بطاقة بنكية (Card)</option>
+                <option value="cod">الدفع عند الاستلام (COD)</option>
+              </select>
+            </div>
+            <div>
+              <label class="block font-semibold text-slate-700 mb-1">حالة الطلب الأولية *</label>
+              <select id="manualOrderStatus" class="w-full bg-slate-50 border border-slate-200 rounded-xl p-2 text-xs font-bold text-amber-800">
+                <option value="pending">⏳ قيد المراجعة</option>
+                <option value="processing">⚙️ قيد التجهيز</option>
+                <option value="shipped">🚚 تم الشحن</option>
+                <option value="delivered">✓ تم التسليم</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="bg-amber-50 p-3 rounded-2xl border border-amber-200 flex justify-between items-center font-bold">
+            <span class="text-amber-900">المبلغ الإجمالي (شامل 50 ج.م شحن):</span>
+            <span id="manualOrderTotalDisplay" class="text-base text-amber-700">0 ج.م</span>
+          </div>
+
+          <button type="submit" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-2xl text-xs transition shadow-md">
+            حفظ وإضافة الطلب للنظام فوراً ✓
           </button>
         </form>
 
@@ -1803,13 +2009,16 @@
                 ${o.status === 'pending' ? '⏳ قيد المراجعة' : o.status === 'processing' ? '⚙️ قيد التجهيز' : o.status === 'shipped' ? '🚚 تم الشحن' : '✓ تم التسليم'}
               </span>
             </td>
-            <td class="p-3">
+            <td class="p-3 flex items-center gap-1.5">
               <select onchange="changeOrderStatus('${o.id}', this.value)" class="bg-white border border-slate-200 rounded-lg px-2 py-1 text-[11px] focus:ring-1 focus:ring-amber-600">
                 <option value="pending" ${o.status==='pending'?'selected':''}>قيد المراجعة</option>
                 <option value="processing" ${o.status==='processing'?'selected':''}>قيد التجهيز</option>
                 <option value="shipped" ${o.status==='shipped'?'selected':''}>تم الشحن</option>
                 <option value="delivered" ${o.status==='delivered'?'selected':''}>تم التسليم</option>
               </select>
+              <button onclick="deleteOrder('${o.id}')" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 p-1.5 rounded-lg text-xs font-bold transition" title="حذف الطلب">
+                🗑️
+              </button>
             </td>
           </tr>
         `).join('');
@@ -1826,8 +2035,11 @@
           <td class="p-3 text-[11px] text-slate-500">${p.category}</td>
           <td class="p-3 font-bold text-amber-700">${p.price} ج.م</td>
           <td class="p-3 font-bold text-slate-700">${p.stock} قطعة</td>
-          <td class="p-3">
-            <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 font-bold text-xs p-1">
+          <td class="p-3 flex items-center gap-2">
+            <button onclick="openEditProductModal(${p.id})" class="text-amber-700 hover:text-amber-900 bg-amber-50 hover:bg-amber-100 px-2 py-1 rounded-lg font-bold text-xs transition flex items-center gap-1">
+              ✏️ تعديل
+            </button>
+            <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-700 bg-red-50 hover:bg-red-100 px-2 py-1 rounded-lg font-bold text-xs transition flex items-center gap-1">
               🗑️ حذف
             </button>
           </td>
@@ -1867,6 +2079,9 @@
       const stock = parseInt(document.getElementById('newProdStock').value, 10);
       const image = document.getElementById('newProdImage').value.trim();
       const desc = document.getElementById('newProdDesc').value.trim();
+      const top = document.getElementById('newProdPyramidTop').value.trim() || 'البرغموت والورد';
+      const heart = document.getElementById('newProdPyramidHeart').value.trim() || 'الياسمين والعود';
+      const base = document.getElementById('newProdPyramidBase').value.trim() || 'العنبر والمسك';
 
       const newProd = {
         id: Date.now(),
@@ -1881,7 +2096,7 @@
         isFeatured: true,
         image,
         desc,
-        pyramid: { top: 'العود الطبيعي', heart: 'العنبر والمسك', base: 'أخشاب الأرز' },
+        pyramid: { top, heart, base },
         reviews: []
       };
 
@@ -1892,12 +2107,129 @@
       showToast(`تمت إضافة العطر الجديد "${name}" إلى المتجر بنجاح! 🎉`);
     }
 
+    function openEditProductModal(id) {
+      const prod = products.find(p => p.id === id);
+      if (!prod) return;
+
+      document.getElementById('editProdId').value = prod.id;
+      document.getElementById('editProdName').value = prod.name;
+      document.getElementById('editProdCategory').value = prod.category;
+      document.getElementById('editProdBrand').value = prod.brand;
+      document.getElementById('editProdPrice').value = prod.price;
+      document.getElementById('editProdCompare').value = prod.comparePrice || '';
+      document.getElementById('editProdStock').value = prod.stock;
+      document.getElementById('editProdImage').value = prod.image;
+      document.getElementById('editProdImgPreview').src = prod.image;
+      document.getElementById('editProdDesc').value = prod.desc;
+
+      const pyr = prod.pyramid || { top: '', heart: '', base: '' };
+      document.getElementById('editProdPyramidTop').value = pyr.top || '';
+      document.getElementById('editProdPyramidHeart').value = pyr.heart || '';
+      document.getElementById('editProdPyramidBase').value = pyr.base || '';
+
+      document.getElementById('editProductModal').classList.remove('hidden');
+    }
+
+    function closeEditProductModal() {
+      document.getElementById('editProductModal').classList.add('hidden');
+    }
+
+    function handleUpdateProduct(e) {
+      e.preventDefault();
+      const id = parseInt(document.getElementById('editProdId').value, 10);
+      const prod = products.find(p => p.id === id);
+      if (!prod) return;
+
+      prod.name = document.getElementById('editProdName').value.trim();
+      prod.category = document.getElementById('editProdCategory').value;
+      prod.brand = document.getElementById('editProdBrand').value.trim();
+      prod.price = parseFloat(document.getElementById('editProdPrice').value);
+      prod.comparePrice = parseFloat(document.getElementById('editProdCompare').value) || null;
+      prod.stock = parseInt(document.getElementById('editProdStock').value, 10);
+      prod.image = document.getElementById('editProdImage').value.trim();
+      prod.desc = document.getElementById('editProdDesc').value.trim();
+
+      prod.pyramid = {
+        top: document.getElementById('editProdPyramidTop').value.trim() || 'البرغموت والورد',
+        heart: document.getElementById('editProdPyramidHeart').value.trim() || 'الياسمين والعود',
+        base: document.getElementById('editProdPyramidBase').value.trim() || 'العنبر والمسك'
+      };
+
+      closeEditProductModal();
+      renderProducts();
+      updateAdminStats();
+      showToast(`تم تحديث بيانات ومكونات "${prod.name}" بنجاح! ✨`);
+    }
+
     function deleteProduct(id) {
       if (!confirm('هل أنت متأكد من حذف هذا العطر من المتجر؟')) return;
       products = products.filter(p => p.id !== id);
       renderProducts();
       updateAdminStats();
-      showToast('تم حذف المنتج من الكتالوج');
+      showToast('تم حذف المنتج من الكتالوج 🗑️');
+    }
+
+    function openAddOrderModal() {
+      const prodSelect = document.getElementById('manualOrderProduct');
+      prodSelect.innerHTML = products.map(p => `
+        <option value="${p.id}" data-price="${p.price}">${p.name} (${p.price} ج.م)</option>
+      `).join('');
+      calculateManualOrderTotal();
+      document.getElementById('addOrderModal').classList.remove('hidden');
+    }
+
+    function closeAddOrderModal() {
+      document.getElementById('addOrderModal').classList.add('hidden');
+    }
+
+    function calculateManualOrderTotal() {
+      const prodSelect = document.getElementById('manualOrderProduct');
+      const selectedOption = prodSelect.options[prodSelect.selectedIndex];
+      const price = selectedOption ? parseFloat(selectedOption.getAttribute('data-price') || 0) : 0;
+      const qty = parseInt(document.getElementById('manualOrderQty').value || 1, 10);
+      const subtotal = price * qty;
+      const shipping = subtotal >= 2000 ? 0 : 50;
+      const total = subtotal + shipping;
+      document.getElementById('manualOrderTotalDisplay').textContent = `${total.toLocaleString('ar-EG')} ج.م`;
+      return total;
+    }
+
+    function handleCreateOrderManual(e) {
+      e.preventDefault();
+      const name = document.getElementById('manualCustName').value.trim();
+      const phone = document.getElementById('manualCustPhone').value.trim();
+      const city = document.getElementById('manualCustCity').value;
+      const address = document.getElementById('manualCustAddress').value.trim();
+      const qty = parseInt(document.getElementById('manualOrderQty').value || 1, 10);
+      const paymentMethod = document.getElementById('manualPaymentMethod').value;
+      const status = document.getElementById('manualOrderStatus').value;
+      const total = calculateManualOrderTotal();
+      const orderNum = 'ORD-' + Math.floor(100000 + Math.random() * 900000);
+
+      const newOrder = {
+        id: orderNum,
+        customerName: name,
+        phone: phone,
+        city: city,
+        address: `${address} - ${city}`,
+        paymentMethod: paymentMethod,
+        itemsCount: qty,
+        total: total,
+        status: status,
+        date: 'الآن (إدخال يدوي)'
+      };
+
+      orders.unshift(newOrder);
+      closeAddOrderModal();
+      updateAdminStats();
+      showToast(`تمت إضافة الطلب (${orderNum}) بنجاح! 📦`);
+    }
+
+    function deleteOrder(orderId) {
+      if (!confirm(`هل أنت متأكد من حذف الطلب (${orderId}) نهائياً من النظام؟`)) return;
+      orders = orders.filter(o => o.id !== orderId);
+      updateAdminStats();
+      showToast(`تم حذف الطلب (${orderId}) بنجاح 🗑️`);
     }
 
     // -------------------------------------------------------------
